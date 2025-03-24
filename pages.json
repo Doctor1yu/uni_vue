@@ -1,0 +1,122 @@
+{
+	"pages": [
+		{
+			"path": "pages/home/home",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/publish/publish",
+			"style": {
+				"navigationBarTitleText": "发布",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/publish_fun/order/order",
+			"style": {
+				"navigationBarTitleText": "发布订单",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/publish_fun/complain/complain",
+			"style": {
+				"navigationBarTitleText": "提交反馈",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/myZone/myZone",
+			"style": {
+				"navigationBarTitleText": "个人中心",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/register/register",
+			"style": {
+				"navigationBarTitleText": "注册"
+			}
+		},
+		{
+			"path": "pages/myZone_fun/rePwd/rePwd",
+			"style": {
+				"navigationBarTitleText": "修改密码"
+			}
+		},
+		{
+			"path": "pages/myZone_fun/editProfile/editProfile",
+			"style": {
+				"navigationBarTitleText": "编辑资料"
+			}
+		},
+		{
+			"path": "pages/myZone_fun/feedback/feedback",
+			"style": {
+				"navigationBarTitleText": "我的反馈"
+			}
+		},
+		{
+			"path": "pages/myZone_fun/issue/issue",
+			"style": {
+				"navigationBarTitleText": "我的订单"
+			}
+		},
+		{
+			"path": "pages/myZone_fun/issueOther/issueOther",
+			"style": {
+				"navigationBarTitleText": "我的接单"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#87bde7",
+		"backgroundColor": "#F8F8F8",
+		"loading": {
+			"title": "加载中...",
+			"unpaired": "处理中..."
+		}
+	},
+	"tabBar": {
+		"list": [
+			{
+				"pagePath": "pages/home/home",
+				"text": "主页",
+				"iconPath": "static/tabbar/home.png",
+				"selectedIconPath": "static/act_tabbar/home_active.png"
+			},
+			{
+				"pagePath": "pages/publish/publish",
+				"text": "发布",
+				"iconPath": "static/tabbar/tianjia.png",
+				"selectedIconPath": "static/act_tabbar/tianjia_active.png"
+			},
+			{
+				"pagePath": "pages/myZone/myZone",
+				"text": "个人中心",
+				"iconPath": "static/tabbar/profile.png",
+				"selectedIconPath": "static/act_tabbar/profile_active.png"
+			}
+		],
+		"color": "#333",
+		"selectedColor": "#333333",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "black"
+	},
+	"easycom": {
+    "autoscan": true,
+    "custom": {
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+    }
+  	}
+}

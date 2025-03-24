@@ -1,0 +1,51 @@
+import { defineStore } from 'pinia';
+
+// 封装存储和读取带有过期时间的数据
+const getStorageWithExpire = (key) => {
+  const data = uni.getStorageSync(key);
+  if (!data || Date.now() > data.expire) {
+    uni.removeStorageSync(key); // 如果过期，清除数据
+    return null;
+  }
+  return data.value;
+};
+
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    userInfo: null,
+    isLoggedIn: false
+  }),
+  
+  actions: {
+    setUserInfo(userInfo) {
+      this.userInfo = userInfo;
+    },
+    
+    setIsLoggedIn(status) {
+      this.isLoggedIn = status;
+    },
+    
+    logout() {
+      this.userInfo = null;
+      this.isLoggedIn = false;
+      uni.removeStorageSync('studentId');
+      uni.removeStorageSync('userInfo');
+      uni.removeStorageSync('isLoggedIn');
+      uni.removeStorageSync('savedCredentials'); // 清除保存的登录信息
+    },
+    
+    // 初始化状态，从缓存中恢复
+    initUserState() {
+      const isLoggedIn = getStorageWithExpire('isLoggedIn');
+      const userInfo = getStorageWithExpire('userInfo');
+      
+      if (isLoggedIn && userInfo) {
+        this.isLoggedIn = true;
+        this.userInfo = userInfo;
+      } else {
+        // 如果数据已过期，清除存储并重置状态
+        this.logout();
+      }
+    }
+  }
+}); 

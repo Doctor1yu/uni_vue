@@ -4,7 +4,6 @@
             <!-- 头像 -->
             <view class="avatar-container">
                 <image class="avatar" :src="form.avatarUrl || defaultAvatar"></image>
-                <text class="upload-text" @click="uploadAvatar">更换头像</text>
             </view>
 
             <!-- 学号（只显示，不可编辑） -->
@@ -34,23 +33,13 @@ const userStore = useUserStore();
 
 // 从 userStore 中获取学号
 const studentId = ref(userStore.userInfo.studentId || ''); // 如果 userInfo 为空，显示空字符串
-const defaultAvatar = ref('https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/avatar1.png');
+const defaultAvatar = ref('http://stm89m2wy.hd-bkt.clouddn.com/uni/avatarUrl/avatar1.png');
 
 const form = ref({
-    avatarUrl: '',
-    nickName: '',
-    phoneNumber: ''
+    avatarUrl: userStore.userInfo.avatarUrl || '', // 从 userStore 中获取头像
+    nickName: userStore.userInfo.nickName || '',
+    phoneNumber: userStore.userInfo.phoneNumber || ''
 });
-
-// 上传头像
-const uploadAvatar = () => {
-    uni.chooseImage({
-        count: 1,
-        success: (res) => {
-            form.value.avatarUrl = res.tempFilePaths[0];
-        }
-    });
-};
 
 // 保存
 const handleSubmit = async () => {
@@ -124,7 +113,7 @@ const handleSubmit = async () => {
 };
 </script>
 
-<style>
+<style scoped>
 .container {
     padding: 20rpx;
 }
@@ -143,13 +132,6 @@ const handleSubmit = async () => {
     height: 140rpx;
     border-radius: 50%;
     border: 4rpx solid #ddd;
-}
-
-.upload-text {
-    display: block;
-    margin-top: 10rpx;
-    color: #007AFF;
-    font-size: 28rpx;
 }
 
 .info-item {

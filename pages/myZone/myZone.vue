@@ -86,15 +86,25 @@ onMounted(() => {
 
 // 图标路径
 const icons = {
-  campus: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/xiaoyuan.png',
-  applyOrder: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/jiedan.png',
-  feedback: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/kefu.png',
-  edit: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/bianji.png',
-  password: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/xiugaimima.png',
-  logout: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/tuichu.png',
-  arrow: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/right.png',
-  orders: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/dingdan1.png',
-  issueOther: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/daina.png'
+  // 申请校区图标
+  campus: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/xiaoyuan.png',
+  // 申请接单图标
+  applyOrder: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/jiedan.png',
+  // 我的反馈图标
+  feedback: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/fankui.png',
+  // 我的订单图标
+  orders: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/dingdan.png',
+  // 我的接单图标
+  issueOther: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/daina.png',
+  // 编辑资料图标
+  edit: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/bianji.png',
+  // 修改密码图标(有问题)
+  password: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/gaimi.png',
+  // 退出登录图标
+  logout: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/tuichu.png',
+  // 右侧箭头图标
+  arrow: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/right.png'
+  
 };
 
 // 修改头像点击事件

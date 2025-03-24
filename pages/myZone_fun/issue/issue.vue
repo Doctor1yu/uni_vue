@@ -114,7 +114,7 @@ const inProgressOrders = computed(() => myOrders.value.filter(order => order.sta
 const completedOrders = computed(() => myOrders.value.filter(order => order.status === '3'));
 </script>
 
-<style>
+<style scoped>
 .container {
   padding: 20rpx;
 }

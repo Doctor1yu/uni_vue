@@ -2,8 +2,16 @@
   <view class="container">
     <view class="form-container">
       <view class="avatar-container">
-        <image class="avatar" :src="form.avatarUrl || defaultAvatar"></image>
-        <text class="upload-text" @click="uploadAvatar">上传头像</text>
+        <view class="avatar-options">
+          <view class="avatar-option" :class="{ selected: form.avatarUrl === maleAvatar }" @click="selectAvatar(maleAvatar)">
+            <image class="avatar" :src="maleAvatar"></image>
+            <text class="avatar-label">男</text>
+          </view>
+          <view class="avatar-option" :class="{ selected: form.avatarUrl === femaleAvatar }" @click="selectAvatar(femaleAvatar)">
+            <image class="avatar" :src="femaleAvatar"></image>
+            <text class="avatar-label">女</text>
+          </view>
+        </view>
       </view>
       <input class="input" placeholder="请输入学号" v-model="form.studentId" />
       <input class="input" placeholder="请输入手机号" v-model="form.phoneNumber" />
@@ -19,7 +27,9 @@
 import { ref } from 'vue';
 import { register } from '../../utils/api.js';
 
-const defaultAvatar = ref('/static/images/avatar1.png');
+// 默认头像URL
+const maleAvatar = ref('http://stm89m2wy.hd-bkt.clouddn.com/uni/avatarUrl/boy.jpg');
+const femaleAvatar = ref('http://stm89m2wy.hd-bkt.clouddn.com/uni/avatarUrl/girl.jpg');
 const form = ref({
   avatarUrl: '',
   studentId: '',
@@ -30,13 +40,9 @@ const form = ref({
 });
 const loading = ref(false);
 
-const uploadAvatar = () => {
-  uni.chooseImage({
-    count: 1,
-    success: (res) => {
-      form.value.avatarUrl = res.tempFilePaths[0];
-    }
-  });
+// 选择头像
+const selectAvatar = (url) => {
+  form.value.avatarUrl = url;
 };
 
 const handleRegister = async () => {
@@ -173,18 +179,35 @@ const handleRegister = async () => {
   margin-bottom: 40rpx;
 }
 
-.avatar {
-  width: 140rpx;
-  height: 140rpx;
-  border-radius: 50%;
-  border: 4rpx solid #ddd;
+.avatar-options {
+  display: flex;
+  justify-content: center;
+  gap: 60rpx;
 }
 
-.upload-text {
-  display: block;
+.avatar-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid #ddd;
+  transition: all 0.2s;
+}
+
+.avatar-option.selected .avatar {
+  border-color: #007AFF;
+  transform: scale(1.1);
+}
+
+.avatar-label {
   margin-top: 10rpx;
-  color: #007AFF;
   font-size: 28rpx;
+  color: #666;
 }
 
 .input {

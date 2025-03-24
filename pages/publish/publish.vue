@@ -52,6 +52,6 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
 /* 空页面无需样式 */
 </style> 

@@ -72,7 +72,7 @@ const handleSubmit = () => {
 };
 </script>
 
-<style>
+<style scoped>
 .container {
     padding: 20rpx;
 }

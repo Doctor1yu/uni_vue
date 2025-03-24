@@ -143,7 +143,7 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
 /* 自定义导航栏 */
 .custom-navbar {
   display: flex;

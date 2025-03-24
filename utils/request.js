@@ -1,7 +1,5 @@
 // 全局请求封装
 const base_url = '/api'
-// 请求超出时间
-const timeout = 5000
  
 //请求封装start
 export default (params) => {

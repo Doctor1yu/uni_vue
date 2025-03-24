@@ -27,9 +27,9 @@ import { getOrders } from '@/utils/api';
 
 // 轮播图数据
 const swiperList = ref([
-	'/static/swiper/s1.jpg',
-	'/static/swiper/s2.jpg',
-	'/static/swiper/s3.jpg'
+	'http://stm89m2wy.hd-bkt.clouddn.com/uni/image/back1.jpg',
+	'http://stm89m2wy.hd-bkt.clouddn.com/uni/image/back2.jpg',
+	'http://stm89m2wy.hd-bkt.clouddn.com/uni/image/back3.jpg'
 ]);
 
 // 控制轮播图显示

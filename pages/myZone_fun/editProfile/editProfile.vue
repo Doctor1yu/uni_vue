@@ -59,28 +59,15 @@ const handleSubmit = async () => {
     }
 
     try {
-        // 准备传输的数据
-        const requestData = {
-            studentId: userStore.userInfo.studentId,
-            nickName: form.value.nickName,
-            phoneNumber: form.value.phoneNumber,
-            avatarUrl: form.value.avatarUrl
-        };
-
-        // 打印传输的数据
-        console.log('传输的数据:', requestData);
-
-        // 检查 studentId 是否为空
-        if (!requestData.studentId) {
-            uni.showToast({
-                title: '学号不能为空',
-                icon: 'none'
-            });
-            return;
-        }
+        // 打印 studentId 以确认其值
+        console.log('当前 studentId:', userStore.userInfo.studentId);
 
         // 调用更新用户信息接口
-        const response = await updateProfile(requestData);
+        const response = await updateProfile(
+            userStore.userInfo.studentId,
+            form.value.phoneNumber,
+            form.value.nickName
+        );
 
         if (response.code === 0) {
             uni.showToast({
@@ -91,7 +78,6 @@ const handleSubmit = async () => {
             // 更新 userStore 中的用户信息
             userStore.userInfo.nickName = form.value.nickName;
             userStore.userInfo.phoneNumber = form.value.phoneNumber;
-            userStore.userInfo.avatarUrl = form.value.avatarUrl;
 
             // 返回上一页
             setTimeout(() => {

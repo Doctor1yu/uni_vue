@@ -8,10 +8,10 @@ export default defineConfig({
     host: "localhost",
     port: 9999,
     proxy: {           // 为开发服务器配置自定义代理规则
-      "/api": {
+      "/apiUni": {
         target: "http://localhost:8888", // 目标接口
-        changeOrigin: true,            // 是否换源
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        changeOrigin: true,            // 是否允许跨域
+        rewrite: (path) => path.replace(/^\/apiUni/, ""),
       }
     }
   }

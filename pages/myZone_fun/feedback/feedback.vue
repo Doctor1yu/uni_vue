@@ -30,7 +30,13 @@
           </view>
           <view class="modal-item">
             <text class="label">反馈状态：</text>
-            <text class="value">{{ currentFeedback.status === 1 ? '未解决' : '已解决' }}</text>
+            <text class="value">
+              {{
+                currentFeedback.status === 1 ? '未解决' :
+                currentFeedback.status === 2 ? '处理中' :
+                '已解决'
+              }}
+            </text>
           </view>
           <view class="modal-item">
             <text class="label">反馈时间：</text>

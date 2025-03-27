@@ -74,7 +74,7 @@ export const updateProfile = (data) => {
 	};
 
 	return request({
-		url: '/user/updateProfile',
+			url: '/user/updateProfile',
 		method: 'put',
 		data: params
 	});

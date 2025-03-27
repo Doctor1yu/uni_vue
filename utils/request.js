@@ -1,5 +1,5 @@
 // 全局请求封装
-const base_url = '/api'
+const base_url = '/apiUni'
  
 //请求封装start
 export default (params) => {

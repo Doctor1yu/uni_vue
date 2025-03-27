@@ -13,10 +13,10 @@
           </view>
         </view>
       </view>
-      <input class="input" placeholder="请输入学号" v-model="form.studentId" />
-      <input class="input" placeholder="请输入手机号" v-model="form.phoneNumber" />
-      <input class="input" placeholder="请输入昵称" v-model="form.nickName" />
-      <input class="input" placeholder="请输入密码" v-model="form.password" type="password" />
+      <input class="input" placeholder="请输入学号(必填)" v-model="form.studentId" />
+      <input class="input" placeholder="请输入手机号(必填)" v-model="form.phoneNumber" />
+      <input class="input" placeholder="请输入昵称(必填)" v-model="form.nickName" />
+      <input class="input" placeholder="请输入密码(必填,至少六位,需包含数字和字母)" v-model="form.password" type="password" />
       <input class="input" placeholder="请确认密码" v-model="form.confirmPassword" type="password" />
       <view class="button register-btn" @click="handleRegister">注册</view>
     </view>
@@ -31,7 +31,7 @@ import { register } from '../../utils/api.js';
 const maleAvatar = ref('http://stm89m2wy.hd-bkt.clouddn.com/uni/avatarUrl/boy.jpg');
 const femaleAvatar = ref('http://stm89m2wy.hd-bkt.clouddn.com/uni/avatarUrl/girl.jpg');
 const form = ref({
-  avatarUrl: '',
+  avatarUrl: femaleAvatar.value,
   studentId: '',
   phoneNumber: '',
   nickName: '',

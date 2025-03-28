@@ -16,8 +16,18 @@
       <input class="input" placeholder="请输入学号(必填)" v-model="form.studentId" />
       <input class="input" placeholder="请输入手机号(必填)" v-model="form.phoneNumber" />
       <input class="input" placeholder="请输入昵称(必填)" v-model="form.nickName" />
-      <input class="input" placeholder="请输入密码(必填,至少六位,需包含数字和字母)" v-model="form.password" type="password" />
-      <input class="input" placeholder="请确认密码" v-model="form.confirmPassword" type="password" />
+      <view class="password-container">
+        <input class="input" placeholder="请输入密码(必填,6～20位,包含数字和字母)" v-model="form.password" :type="showPassword ? 'text' : 'password'" />
+        <view class="eye-icon" @click="showPassword = !showPassword">
+          <image :src="showPassword ? eye_show : eye_hide" style="width: 60rpx; height: 60rpx;" />
+        </view>
+      </view>
+      <view class="password-container">
+        <input class="input" placeholder="请确认密码" v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" />
+        <view class="eye-icon" @click="showConfirmPassword = !showConfirmPassword">
+          <image :src="showConfirmPassword ? eye_show : eye_hide" style="width: 60rpx; height: 60rpx;" />
+        </view>
+      </view>
       <view class="button register-btn" @click="handleRegister">注册</view>
     </view>
   </view>
@@ -39,6 +49,11 @@ const form = ref({
   confirmPassword: ''
 });
 const loading = ref(false);
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+
+const eye_show = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_show.png")
+const eye_hide = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_hide.png")
 
 // 选择头像
 const selectAvatar = (url) => {
@@ -226,5 +241,19 @@ const handleRegister = async () => {
   border-radius: 8rpx;
   font-size: 32rpx;
   margin-top: 40rpx;
+}
+
+.password-container {
+  position: relative;
+  margin-bottom: 20rpx;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 20rpx;
+  top: 60%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 40rpx;
 }
 </style> 

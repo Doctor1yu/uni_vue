@@ -2,7 +2,13 @@
   <view class="container">
     <view class="form-container">
       <input class="input" placeholder="请输入学号" v-model="form.studentId" />
-      <input class="input" placeholder="请输入密码" v-model="form.password" type="password" />
+      <view class="password-container">
+        <input class="input" placeholder="请输入密码" v-model="form.password" :type="showPassword ? 'text' : 'password'">
+        <view class="eye-icon" @click="showPassword = !showPassword">
+          <image :src="showPassword ? eye_show : eye_hide" style="width: 60rpx; height: 60rpx;" />
+        </view>
+      </input>
+      </view>
       <checkbox v-model="rememberMe" style="margin: 10rpx 0;">记住密码</checkbox>
       <view class="button-group">
         <view class="button login-btn" @click="handleLogin">登录</view>
@@ -43,6 +49,11 @@ const form = ref({
 });
 const rememberMe = ref(false);
 const loading = ref(false);
+const showPassword = ref(false);
+
+const eye_show = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_show.png")
+const eye_hide = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_hide.png")
+
 
 const handleLogin = async () => {
   console.log('点击登录按钮');
@@ -108,7 +119,7 @@ const handleLogin = async () => {
         title: '登录成功',
         icon: 'success'
       });
-      
+
       // 先刷新页面，再跳转到首页
       setTimeout(() => {
         uni.reLaunch({
@@ -118,16 +129,15 @@ const handleLogin = async () => {
     } else {
       // 登录失败，显示错误信息
       uni.showToast({
-        title: result.message || '登录失败，请检查账号和密码',
+        title: result.data.message || '登录失败，请检查账号和密码',
         icon: 'none'
       });
     }
   } catch (error) {
-    console.error('登录请求失败', error);
-    console.log('错误详情:', error.response);
+    // 登录失败，显示错误信息
     uni.showToast({
-      title: '网络异常，请稍后再试',
-      icon: 'none'
+        title: error.response?.data?.message || '登陆失败，请检查账号和密码',
+        icon: 'none'
     });
   } finally {
     loading.value = false;
@@ -192,5 +202,19 @@ const navigateToRegister = () => {
   background-color: #f0f0f0;
   color: #333;
   margin-left: 10rpx;
+}
+
+.password-container {
+  position: relative;
+  margin-bottom: 20rpx;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 20rpx;
+  top: 60%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 40rpx;
 }
 </style>

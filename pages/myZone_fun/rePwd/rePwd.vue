@@ -8,13 +8,28 @@
             </view>
 
             <!-- 原密码 -->
-            <input class="input" placeholder="请输入原密码" v-model="form.oldPassword" type="password" />
+            <view class="password-container">
+              <input class="input" placeholder="请输入原密码" v-model="form.oldPassword" :type="showOldPassword ? 'text' : 'password'" />
+              <view class="eye-icon" @click="showOldPassword = !showOldPassword">
+                <image :src="showOldPassword ? eye_show : eye_hide" style="width: 60rpx; height: 60rpx;" />
+              </view>
+            </view>
 
             <!-- 新密码 -->
-            <input class="input" placeholder="请输入新密码(6~20位)" v-model="form.newPassword" type="password" />
+            <view class="password-container">
+              <input class="input" placeholder="请输入新密码(6~20位)" v-model="form.newPassword" :type="showNewPassword ? 'text' : 'password'" />
+              <view class="eye-icon" @click="showNewPassword = !showNewPassword">
+                <image :src="showNewPassword ? eye_show : eye_hide" style="width: 60rpx; height: 60rpx;" />
+              </view>
+            </view>
 
             <!-- 确认密码 -->
-            <input class="input" placeholder="请确认新密码(6~20位)" v-model="form.confirmPassword" type="password" />
+            <view class="password-container">
+              <input class="input" placeholder="请确认新密码(6~20位)" v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" />
+              <view class="eye-icon" @click="showConfirmPassword = !showConfirmPassword">
+                <image :src="showConfirmPassword ? eye_show : eye_hide" style="width: 60rpx; height: 60rpx;" />
+              </view>
+            </view>
 
             <!-- 提交按钮 -->
             <view class="submit-btn" @click="handleSubmit">确认修改</view>
@@ -37,6 +52,13 @@ const form = ref({
     newPassword: '',
     confirmPassword: ''
 });
+
+const showOldPassword = ref(false);
+const showNewPassword = ref(false);
+const showConfirmPassword = ref(false);
+
+const eye_show = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_show.png")
+const eye_hide = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_hide.png")
 
 // 保存
 const handleSubmit = async () => {
@@ -148,5 +170,19 @@ const handleSubmit = async () => {
     border-radius: 8rpx;
     font-size: 32rpx;
     margin-top: 40rpx;
+}
+
+.password-container {
+  position: relative;
+  margin-bottom: 20rpx;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 20rpx;
+  top: 60%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 40rpx;
 }
 </style>

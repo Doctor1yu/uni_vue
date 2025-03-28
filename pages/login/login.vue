@@ -71,6 +71,8 @@ const handleLogin = async () => {
     
     const result = await login(params);
     
+    console.log('后端响应数据:', result.data.status);
+    
     if (result.code === 0) {
       // 直接使用 result.data 作为用户信息
       const userInfo = result.data || {

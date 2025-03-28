@@ -59,17 +59,15 @@ const handleSubmit = async () => {
     }
 
     try {
-        // 打印 studentId 以确认其值
-        console.log('当前 studentId:', userStore.userInfo.studentId);
 
         // 调用更新用户信息接口
         const response = await updateProfile(
             userStore.userInfo.studentId,
-            form.value.phoneNumber,
-            form.value.nickName
+            form.value.nickName,
+            form.value.phoneNumber
         );
 
-        if (response.code === 0) {
+        if (response.data.code === 0) {
             uni.showToast({
                 title: '保存成功',
                 icon: 'success'
@@ -79,13 +77,16 @@ const handleSubmit = async () => {
             userStore.userInfo.nickName = form.value.nickName;
             userStore.userInfo.phoneNumber = form.value.phoneNumber;
 
-            // 返回上一页
+            // 1秒后跳转到个人中心界面
             setTimeout(() => {
-                uni.navigateBack();
+                uni.switchTab({
+                    url: '/pages/myZone/myZone'
+                });
             }, 1000);
         } else {
             uni.showToast({
-                title: response.message || '保存失败',
+                // title: response.data.message || '保存失败',
+                title:  '保存失败',
                 icon: 'none'
             });
         }

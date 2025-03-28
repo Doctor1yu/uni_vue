@@ -65,19 +65,11 @@ export const getOrders = () => {
 };
 
 // 更新用户信息接口
-export const updateProfile = (data) => {
-	const params = {
-		studentId: data.studentId,
-		nickName: data.nickName,
-		phoneNumber: data.phoneNumber,
-		avatarUrl: data.avatarUrl
-	};
-
-	return request({
-			url: '/user/updateProfile',
-		method: 'put',
-		data: params
-	});
+export const updateProfile = async (studentId, nickName, phoneNumber) => {
+    return uni.request({
+        url: `/apiUni/user/updateProfile?studentId=${studentId}&nickName=${nickName}&phoneNumber=${phoneNumber}`,
+        method: 'PUT'
+    });
 };
 
 // 获取用户反馈接口
@@ -110,5 +102,21 @@ export const getOrdersByStatus = (publisherId, status) => {
 		url: `/api/function/orders/by-status?publisherId=${publisherId}&status=${status}`,
 		method: 'get'
 	});
+};
+
+// 更改用户密码接口
+export const changePassword = (studentId, oldPassword, newPassword, confirmPassword) => {
+    // 打印请求数据
+    console.log('请求数据:', {
+        studentId,
+        oldPassword,
+        newPassword,
+        confirmPassword
+    });
+
+    return request({
+        url: `/user/changePassword?studentId=${studentId}&oldPassword=${oldPassword}&newPassword=${newPassword}&confirmPassword=${confirmPassword}`,
+        method: 'PATCH'
+    });
 };
 

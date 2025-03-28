@@ -11,10 +11,10 @@
             <input class="input" placeholder="请输入原密码" v-model="form.oldPassword" type="password" />
 
             <!-- 新密码 -->
-            <input class="input" placeholder="请输入新密码" v-model="form.newPassword" type="password" />
+            <input class="input" placeholder="请输入新密码(6~20位)" v-model="form.newPassword" type="password" />
 
             <!-- 确认密码 -->
-            <input class="input" placeholder="请确认新密码" v-model="form.confirmPassword" type="password" />
+            <input class="input" placeholder="请确认新密码(6~20位)" v-model="form.confirmPassword" type="password" />
 
             <!-- 提交按钮 -->
             <view class="submit-btn" @click="handleSubmit">确认修改</view>
@@ -24,9 +24,13 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useUserStore } from '@/stores/user'; // 导入用户 store
+import { changePassword } from '@/utils/api'; // 导入更改密码接口
 
-// 假设学号从父组件或全局状态传入
-const studentId = ref('20230001'); // 这里可以替换为实际的学号
+const userStore = useUserStore();
+
+// 从 userStore 中获取学号
+const studentId = ref(userStore.userInfo.studentId || ''); // 如果 userInfo 为空，显示空字符串
 
 const form = ref({
     oldPassword: '',
@@ -35,7 +39,7 @@ const form = ref({
 });
 
 // 保存
-const handleSubmit = () => {
+const handleSubmit = async () => {
     if (!form.value.oldPassword) {
         uni.showToast({
             title: '请输入原密码',
@@ -58,17 +62,45 @@ const handleSubmit = () => {
         return;
     }
 
-    uni.showToast({
-        title: '修改成功',
-        icon: 'success'
-    });
+    try {
+        // 调用更改密码接口
+        const response = await changePassword(
+            studentId.value,
+            form.value.oldPassword,
+            form.value.newPassword,
+            form.value.confirmPassword
+        );
 
-    // 1秒后跳转到个人中心界面
-    setTimeout(() => {
-        uni.switchTab({
-            url: '/pages/myZone/myZone'
+        if (response.code === 0) {
+            uni.showToast({
+                title: '密码修改成功',
+                icon: 'success'
+            });
+
+             // 更新 userStore 中的用户信息
+            userStore.userInfo.password = form.value.newPassword;
+
+            // 1秒后跳转到个人中心界面
+            setTimeout(() => {
+                uni.switchTab({
+                    url: '/pages/myZone/myZone'
+                });
+            }, 1000);
+        } else {
+            // 打印失败时的响应数据
+            console.log('失败响应数据:', response);
+            uni.showToast({
+                title: response.data?.message || '密码修改失败',
+                icon: 'none'
+            });
+        }
+    } catch (error) {
+        console.error('保存失败:', error);
+        uni.showToast({
+            title: '网络错误，请重试',
+            icon: 'none'
         });
-    }, 1000);
+    }
 };
 </script>
 

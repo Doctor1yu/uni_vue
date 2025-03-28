@@ -68,10 +68,16 @@ const handleLogin = async () => {
       password: form.value.password
     };
     
-    
     const result = await login(params);
     
-    console.log('后端响应数据:', result.data.status);
+    // 检查账号状态
+    if (result.data.status !== 1) {
+      uni.showToast({
+        title: '您的账号已被限制登录，请联系管理员',
+        icon: 'none'
+      });
+      return; // 直接返回，不执行后续操作
+    }
     
     if (result.code === 0) {
       // 直接使用 result.data 作为用户信息

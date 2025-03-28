@@ -71,7 +71,7 @@ const handleLogin = async () => {
     const result = await login(params);
     
     // 检查账号状态
-    if (result.data.status !== 1) {
+    if (result.data.status != 1) {
       uni.showToast({
         title: '您的账号已被限制登录，请联系管理员',
         icon: 'none'

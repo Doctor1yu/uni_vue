@@ -2,7 +2,7 @@
     <view class="order-card">
       <!-- 头像、昵称 -->
       <view class="order-header">
-        <image class="avatar" :src="order.avatarUrl"></image>
+        <image class="avatar" :src="order.avatarUrl" lazy-load></image>
         <text class="nickname">{{ order.nickname }}</text>
       </view>
   

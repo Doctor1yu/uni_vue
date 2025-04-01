@@ -11,7 +11,7 @@
 		<view class="order-section">
 			<view class="order-title">最新订单</view>
 			<view v-if="orders.length > 0" class="order-list">
-				<HomeOrder v-for="(order, index) in orders" :key="index" :order="order" :on-accept="handleAccept" />
+				<HomeOrder v-for="(order, index) in orders" :key="index" :order="order" :on-accept="handleAccept" v-lazy="index" />
 			</view>
 			<view v-else class="no-order">
 				———— 暂无新订单 ————
@@ -131,6 +131,21 @@ const handleBack = () => {
 		});
 	}, 100);
 };
+
+// 添加懒加载指令
+const vLazy = {
+	mounted(el, binding) {
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					el.classList.add('visible');
+					observer.unobserve(el);
+				}
+			});
+		});
+		observer.observe(el);
+	}
+};
 </script>
 
 <style scoped>
@@ -177,5 +192,17 @@ const handleBack = () => {
 /* 新增全局样式 */
 view {
 	box-sizing: border-box;
+}
+
+/* 添加懒加载动画 */
+.order-card {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.5s, transform 0.5s;
+}
+
+.order-card.visible {
+	opacity: 1;
+	transform: translateY(0);
 }
 </style>

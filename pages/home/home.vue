@@ -1,9 +1,9 @@
 <template>
 	<view>
 		<!-- 添加轮播图 -->
-		<swiper class="swiper" indicator-dots autoplay circular v-if="showSwiper">
+		<swiper class="swiper" indicator-dots autoplay circular v-if="showSwiper && swiperList.length > 0">
 			<swiper-item v-for="(item, index) in swiperList" :key="index">
-				<image :src="item" mode="aspectFill"></image>
+				<image :src="item" mode="aspectFill" :alt="item.theme"></image>
 			</swiper-item>
 		</swiper>
 
@@ -24,13 +24,10 @@
 import { ref, onMounted } from 'vue';
 import HomeOrder from '@/components/HomeOrder/HomeOrder.vue';
 import { getOrders } from '@/api/order.js';
+import { getRotations } from '@/api/rotation.js';
 
 // 轮播图数据
-const swiperList = ref([
-	'http://stm89m2wy.hd-bkt.clouddn.com/uni/image/back1.jpg',
-	'http://stm89m2wy.hd-bkt.clouddn.com/uni/image/back2.jpg',
-	'http://stm89m2wy.hd-bkt.clouddn.com/uni/image/back3.jpg'
-]);
+const swiperList = ref([]);
 
 // 控制轮播图显示
 const showSwiper = ref(true);
@@ -49,6 +46,18 @@ const formatDateTime = (dateTime) => {
 	return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
+// 获取轮播图数据
+const fetchRotations = async () => {
+	try {
+		const response = await getRotations();
+		if (response.code === 0) {
+			swiperList.value = response.data.map(item => item.rotationUrl);
+		}
+	} catch (error) {
+		console.error('获取轮播图失败:', error);
+	}
+};
+
 // 获取订单数据
 const fetchOrders = async () => {
 	try {
@@ -65,15 +74,16 @@ const fetchOrders = async () => {
 			}));
 
 			// 打印格式化后的订单数据
-			console.log('格式化后的订单数据:', orders.value);
+			console.log('格式化后的订单数据:', orders);
 		}
 	} catch (error) {
 		console.error('获取订单失败:', error);
 	}
 };
 
-// 页面加载时获取订单数据
+// 页面加载时获取轮播图数据和订单数据
 onMounted(() => {
+	fetchRotations();
 	fetchOrders();
 
 	try {

@@ -30,10 +30,18 @@ export const publishOrder = (data) => {
 	});
 };
 
-// 根据状态获取订单列表
+// 根据学号和状态获取订单列表
 export const getOrdersByStatus = (publisherId, status) => {
 	return request({
 		url: `/api/function/orders/by-status?publisherId=${publisherId}&status=${status}`,
+		method: 'get'
+	});
+};
+
+// 根据接单者学号和状态获取订单列表
+export const getOrdersByAcceptorIdAndStatus = (acceptorId, status) => {
+	return request({
+		url: `/api/function/orders/received?acceptorId=${acceptorId}&status=${status}`,
 		method: 'get'
 	});
 };

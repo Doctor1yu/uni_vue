@@ -23,7 +23,6 @@
       </view>
       <OrderCard 
         v-for="(order, index) in inProgressOrders" 
-        v-else
         :key="index" 
         :order="order" 
       />
@@ -36,7 +35,6 @@
       </view>
       <OrderCard 
         v-for="(order, index) in completedOrders" 
-        v-else
         :key="index" 
         :order="order" 
       />
@@ -45,38 +43,41 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { getOrdersByAcceptorIdAndStatus } from '@/api/order';
+import { useUserStore } from '@/stores/user';
 import OrderCard from '@/components/OrderCard/OrderCard.vue';
 
-// 当前激活的选项卡
+const userStore = useUserStore();
 const activeTab = ref('inProgress');
 
 // 切换选项卡
-const switchTab = (tab) => {
+const switchTab = async (tab) => {
   activeTab.value = tab;
+  await fetchOrders();
 };
 
-// 测试数据
-const myOrders = ref([
-  {
-    publisherAvatarUrl: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/avatar1.png',
-    publisherNickName: '用户A',
-    pickupPoint: '云逸酒店隔壁',
-    location: '德馨苑1',
-    amount: 5,
-    createdAt: '2023-10-01T12:00:00Z',
-    status: '2' // 正在进行中
-  },
-  {
-    publisherAvatarUrl: 'https://mp-b58e33c4-f164-4150-809d-6e1f78c8b7bb.cdn.bspapp.com/icons/avatar1.png',
-    publisherNickName: '用户B',
-    pickupPoint: '学校超市',
-    location: '尚行楼1',
-    amount: 8,
-    createdAt: '2023-10-02T14:30:00Z',
-    status: '3' // 已完成
+// 获取订单数据
+const fetchOrders = async () => {
+  try {
+    const status = activeTab.value === 'inProgress' ? '2' : '3';
+    const acceptorId = userStore.userInfo.studentId;
+
+    const res = await getOrdersByAcceptorIdAndStatus(acceptorId, status);
+    console.log('接口返回数据:', res.data); // 打印返回数据
+    myOrders.value = res.data;
+  } catch (error) {
+    console.error('获取订单失败:', error.response ? error.response.data : error.message);
   }
-]);
+};
+
+// 监听选项卡变化
+onMounted(() => {
+  fetchOrders();
+});
+
+// 订单数据
+const myOrders = ref([]);
 
 // 计算属性
 const inProgressOrders = computed(() => myOrders.value.filter(order => order.status === '2'));

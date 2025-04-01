@@ -11,12 +11,60 @@
 		<view class="order-section">
 			<view class="order-title">最新订单</view>
 			<view v-if="orders.length > 0" class="order-list">
-				<HomeOrder v-for="(order, index) in orders" :key="index" :order="order" :on-accept="handleAccept" v-lazy="index" />
+				<HomeOrder v-for="(order, index) in orders" :key="index" :order="order" :on-accept="handleAccept"
+					v-lazy="index" />
 			</view>
 			<view v-else class="no-order">
 				———— 暂无新订单 ————
 			</view>
 		</view>
+
+		<!-- 展示弹窗 -->
+		<uni-popup ref="popup" type="center">
+			<view class="popup-content">
+				<view class="popup-title">订单详情</view>
+				<view class="popup-item">
+					<text class="label">发布人：</text>
+					<text class="value">{{ currentOrder.publisherName }}</text>
+				</view>
+				<view class="popup-item">
+					<text class="label">拿货地点：</text>
+					<text class="value">{{ currentOrder.pickupPoint }}</text>
+				</view>
+				<view class="popup-item">
+					<text class="label">收货地点：</text>
+					<text class="value">{{ currentOrder.location }}</text>
+				</view>
+				<view class="popup-item">
+					<text class="label">配送时间：</text>
+					<text class="value">{{ currentOrder.sendAt }}</text>
+				</view>
+				<view class="popup-item">
+					<text class="label">联系电话：</text>
+					<text class="value">{{ formatPhone(currentOrder.phoneNumber) }}</text>
+				</view>
+				<view class="popup-item">
+					<text class="label">取件码：</text>
+					<text class="value">{{ formatDescription(currentOrder.description) }}</text>
+				</view>
+				<view class="popup-item">
+					<text class="label">金额：</text>
+					<text class="value">￥{{ currentOrder.amount }}</text>
+				</view>
+				<view class="popup-item">
+					<text class="label">备注：</text>
+					<text class="value">{{ currentOrder.remark || '无' }}</text>
+				</view>
+				<view class="popup-item">
+					<text class="label">发布时间：</text>
+					<text class="value">{{ formatDateTime(currentOrder.publishTime) }}</text>
+				</view>
+				<view class="button-group">
+					<button class="popup-button return-button" @click="closePopup">返回</button>
+					<button class="popup-button accept-button" @click="handleAcceptConfirm">接单</button>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -25,6 +73,7 @@ import { ref, onMounted } from 'vue';
 import HomeOrder from '@/components/HomeOrder/HomeOrder.vue';
 import { getOrders } from '@/api/order.js';
 import { getRotations } from '@/api/rotation.js';
+import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 
 // 轮播图数据
 const swiperList = ref([]);
@@ -34,9 +83,12 @@ const showSwiper = ref(true);
 
 const orders = ref([]);
 
+const popup = ref(null);
+const currentOrder = ref({});
+
 // 格式化时间
 const formatDateTime = (dateTime) => {
-	if (!dateTime) return ''; // 如果时间为空，返回空字符串
+	if (!dateTime) return '';
 	const date = new Date(dateTime);
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -67,14 +119,19 @@ const fetchOrders = async () => {
 			orders.value = response.data.map(order => ({
 				avatarUrl: order.publisherAvatarUrl,
 				nickname: order.publisherNickName,
+				publisherName: order.publisherName,
 				pickupPoint: order.pickupPoint,
 				location: order.location,
+				sendAt: order.sendAt, // 配送时间
+				phoneNumber: order.phoneNumber, // 联系电话
+				description: order.description, // 取件码
 				amount: order.amount,
-				publishTime: formatDateTime(order.createdAt) // 确保调用 formatDateTime
+				remark: order.remark,
+				publishTime: formatDateTime(order.createdAt)
 			}));
 
 			// 打印格式化后的订单数据
-			console.log('格式化后的订单数据:', orders);
+			console.log('格式化后的订单数据:', orders.value);
 		}
 	} catch (error) {
 		console.error('获取订单失败:', error);
@@ -112,13 +169,50 @@ onMounted(() => {
 	}
 });
 
+// 格式化电话号码
+const formatPhone = (phone) => {
+	return phone ? phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '';
+};
+
+// 格式化描述
+const formatDescription = (desc) => {
+	return desc ? desc.replace(/(\d{2})-(\d{4})/, '**-****') : '';
+};
+
 // 处理接单逻辑
-const handleAccept = () => {
+const handleAccept = (order) => {
+	// 格式化发布人姓名
+	const formatPublisherName = (name) => {
+		if (!name) return '';
+		return name.length > 1 ? name[0] + '**' : name;
+	};
+
+	currentOrder.value = {
+		publisherName: formatPublisherName(order.publisherName), // 脱敏处理
+		pickupPoint: order.pickupPoint,
+		location: order.location,
+		sendAt: order.sendAt, // 配送时间
+		phoneNumber: order.phoneNumber, // 联系电话
+		description: order.description, // 取件码
+		amount: order.amount,
+		remark: order.remark,
+		publishTime: order.publishTime
+	};
+	popup.value.open();
+};
+
+const closePopup = () => {
+	popup.value.close();
+};
+
+// 处理接单确认逻辑
+const handleAcceptConfirm = () => {
 	uni.showToast({
 		title: '接单成功',
 		icon: 'success',
 		duration: 1000
 	});
+	closePopup();
 };
 
 // 将方法传递给子组件
@@ -214,5 +308,57 @@ view {
 .order-card.visible {
 	opacity: 1;
 	transform: translateY(0);
+}
+
+.popup-content {
+	background-color: #fff;
+	border-radius: 20rpx;
+	padding: 40rpx;
+	width: 600rpx;
+}
+
+.popup-title {
+	font-size: 36rpx;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 30rpx;
+}
+
+.popup-item {
+	margin-bottom: 20rpx;
+}
+
+.label {
+	color: #666;
+	margin-right: 10rpx;
+}
+
+.value {
+	color: #333;
+}
+
+.button-group {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 30rpx;
+}
+
+.popup-button {
+	flex: 1;
+	margin: 0 10rpx;
+	border-radius: 10rpx;
+	font-size: 28rpx;
+	height: 80rpx;
+	line-height: 80rpx;
+}
+
+.return-button {
+	background-color: #ccc;
+	color: #333;
+}
+
+.accept-button {
+	background-color: #007AFF;
+	color: #fff;
 }
 </style>

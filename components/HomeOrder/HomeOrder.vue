@@ -22,13 +22,13 @@
       <!-- 发布时间 -->
       <view class="order-footer">
         <text class="publish-time">发布时间：{{ order.publishTime }}</text>
-        <button class="accept-button" @click="onAccept">接单</button>
+        <button class="accept-button" @click="handleClick">接单</button>
       </view>
     </view>
   </template>
   
   <script setup>
-  defineProps({
+  const props = defineProps({
     order: {
       type: Object,
       required: true
@@ -38,6 +38,10 @@
       required: true
     }
   });
+  
+  const handleClick = () => {
+    props.onAccept(props.order);
+  };
   </script>
   
   <style scoped>

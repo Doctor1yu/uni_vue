@@ -27,7 +27,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/user'; // 导入用户 store
-import { updateProfile } from '@/utils/api'; // 导入更新用户信息接口
+import { updateProfile } from '@/api/user'; // 导入更新用户信息接口
 
 const userStore = useUserStore();
 

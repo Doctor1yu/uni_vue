@@ -40,7 +40,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/user'; // 导入用户 store
-import { changePassword } from '@/utils/api'; // 导入更改密码接口
+import { changePassword } from '@/api/user'; // 导入更改密码接口
 
 const userStore = useUserStore();
 

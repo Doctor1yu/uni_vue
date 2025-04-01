@@ -65,7 +65,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { getOrdersByStatus } from '@/utils/api';
+import { getOrdersByStatus } from '@/api/order';
 import { useUserStore } from '@/stores/user';
 import OrderCard from '@/components/OrderCard/OrderCard.vue';
 

@@ -23,7 +23,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import HomeOrder from '@/components/HomeOrder/HomeOrder.vue';
-import { getOrders } from '@/utils/api';
+import { getOrders } from '@/api/order.js';
 
 // 轮播图数据
 const swiperList = ref([

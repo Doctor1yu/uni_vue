@@ -21,7 +21,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { login } from '@/utils/api.js';
+import { login } from '@/api/user';
 
 // 封装存储和读取带有过期时间的数据
 const setStorageWithExpire = (key, value, expire) => {

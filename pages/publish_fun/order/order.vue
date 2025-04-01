@@ -118,7 +118,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { publishOrder } from '@/utils/api'; // 导入发布订单接口
+import { publishOrder } from '@/api/order'; // 导入发布订单接口
 import { useUserStore } from '@/stores/user'; // 导入用户 store
 
 const userStore = useUserStore();

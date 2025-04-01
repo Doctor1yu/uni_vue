@@ -35,7 +35,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { register } from '../../utils/api.js';
+import { register } from '@/api/user';
 
 // 默认头像URL
 const maleAvatar = ref('http://stm89m2wy.hd-bkt.clouddn.com/uni/avatarUrl/boy.jpg');

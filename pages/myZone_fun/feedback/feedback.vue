@@ -59,7 +59,7 @@
 import { ref, onMounted } from 'vue';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 import { useUserStore } from '@/stores/user';
-import { getFeedbacks } from '@/utils/api';
+import { getFeedbacks } from '@/api/feedback';
 
 const userStore = useUserStore();
 const popup = ref(null);

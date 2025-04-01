@@ -74,6 +74,7 @@ import HomeOrder from '@/components/HomeOrder/HomeOrder.vue';
 import { getOrders } from '@/api/order.js';
 import { getRotations } from '@/api/rotation.js';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
+import { useUserStore } from '@/stores/user';
 
 // 轮播图数据
 const swiperList = ref([]);
@@ -207,6 +208,20 @@ const closePopup = () => {
 
 // 处理接单确认逻辑
 const handleAcceptConfirm = () => {
+	const userStore = useUserStore();
+
+	// 检查用户角色
+	if (userStore.userInfo.rule == 1) {
+		uni.showModal({
+			title: '提示',
+			content: '请先申请成为接单员',
+			showCancel: false,
+			confirmText: '确定'
+		});
+		return; // 阻止后续逻辑执行
+	}
+
+	// 接单成功逻辑
 	uni.showToast({
 		title: '接单成功',
 		icon: 'success',

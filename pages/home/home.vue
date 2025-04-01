@@ -121,6 +121,7 @@ const fetchOrders = async () => {
 				avatarUrl: order.publisherAvatarUrl,
 				nickname: order.publisherNickName,
 				publisherName: order.publisherName,
+				publisherId: order.publisherId,
 				pickupPoint: order.pickupPoint,
 				location: order.location,
 				sendAt: order.sendAt, // 配送时间
@@ -190,6 +191,7 @@ const handleAccept = (order) => {
 
 	currentOrder.value = {
 		publisherName: formatPublisherName(order.publisherName), // 脱敏处理
+		publisherId: order.publisherId, // 确保传入 publisherId
 		pickupPoint: order.pickupPoint,
 		location: order.location,
 		sendAt: order.sendAt, // 配送时间
@@ -210,6 +212,28 @@ const closePopup = () => {
 const handleAcceptConfirm = () => {
 	const userStore = useUserStore();
 
+	// 检查 userInfo 是否存在
+	if (!userStore.userInfo) {
+		uni.showModal({
+			title: '提示',
+			content: '用户信息未加载，请重新登录',
+			showCancel: false,
+			confirmText: '确定'
+		});
+		return; // 阻止后续逻辑执行
+	}
+
+	// 检查是否是自己发布的订单
+	if (userStore.userInfo.studentId === currentOrder.value.publisherId) {
+		uni.showModal({
+			title: '提示',
+			content: '你接自己的单作甚么',
+			showCancel: false,
+			confirmText: '确定'
+		});
+		return; // 阻止后续逻辑执行
+	}
+
 	// 检查用户角色
 	if (userStore.userInfo.rule == 1) {
 		uni.showModal({
@@ -227,7 +251,12 @@ const handleAcceptConfirm = () => {
 		icon: 'success',
 		duration: 1000
 	});
+
+	// 关闭弹窗
 	closePopup();
+
+	// 刷新订单列表
+	fetchOrders();
 };
 
 // 将方法传递给子组件

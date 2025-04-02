@@ -7,7 +7,6 @@
         <view class="eye-icon" @click="showPassword = !showPassword">
           <image :src="showPassword ? eye_show : eye_hide" style="width: 60rpx; height: 60rpx;" />
         </view>
-      </input>
       </view>
       <checkbox v-model="rememberMe" style="margin: 10rpx 0;">记住密码</checkbox>
       <view class="button-group">
@@ -21,7 +20,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { login } from '@/api/user';
+import { login} from '@/api/user';
 
 // 封装存储和读取带有过期时间的数据
 const setStorageWithExpire = (key, value, expire) => {

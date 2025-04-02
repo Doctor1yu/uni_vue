@@ -104,7 +104,6 @@ const icons = {
   logout: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/tuichu.png',
   // 右侧箭头图标
   arrow: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/right.png'
-  
 };
 
 // 修改头像点击事件
@@ -160,10 +159,9 @@ const applyOrder = () => {
     });
     return;
   }
-  uni.showToast({
-    title: '暂未开放该功能',
-    icon: 'none',
-    duration: 2000
+  // 跳转到申请接单页面
+  uni.navigateTo({
+    url: '/pages/myZone_fun/submit/submit'
   });
 };
 

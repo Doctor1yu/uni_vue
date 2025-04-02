@@ -71,7 +71,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import HomeOrder from '@/components/HomeOrder/HomeOrder.vue';
-import { getOrders } from '@/api/order.js';
+import { getOrders, acceptOrders } from '@/api/order.js';
 import { getRotations } from '@/api/rotation.js';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 import { useUserStore } from '@/stores/user';
@@ -118,6 +118,7 @@ const fetchOrders = async () => {
 
 		if (response.code === 0) {
 			orders.value = response.data.map(order => ({
+				id: order.id, // 确保获取订单 ID
 				avatarUrl: order.publisherAvatarUrl,
 				nickname: order.publisherNickName,
 				publisherName: order.publisherName,
@@ -190,6 +191,7 @@ const handleAccept = (order) => {
 	};
 
 	currentOrder.value = {
+		id: order.id, // 确保传入订单 ID
 		publisherName: formatPublisherName(order.publisherName), // 脱敏处理
 		publisherId: order.publisherId, // 确保传入 publisherId
 		pickupPoint: order.pickupPoint,
@@ -209,7 +211,7 @@ const closePopup = () => {
 };
 
 // 处理接单确认逻辑
-const handleAcceptConfirm = () => {
+const handleAcceptConfirm = async () => {
 	const userStore = useUserStore();
 
 	// 检查 userInfo 是否存在
@@ -235,7 +237,7 @@ const handleAcceptConfirm = () => {
 	}
 
 	// 检查用户角色
-	if (userStore.userInfo.rule == 1) {
+	if (userStore.userInfo.role == 1) {
 		uni.showModal({
 			title: '提示',
 			content: '请先申请成为接单员',
@@ -245,18 +247,57 @@ const handleAcceptConfirm = () => {
 		return; // 阻止后续逻辑执行
 	}
 
-	// 接单成功逻辑
-	uni.showToast({
-		title: '接单成功',
-		icon: 'success',
-		duration: 1000
-	});
+	// 检查 orderId 是否存在
+	if (!currentOrder.value.id) {
+		uni.showModal({
+			title: '提示',
+			content: '订单信息不完整，无法接单',
+			showCancel: false,
+			confirmText: '确定'
+		});
+		return; // 阻止后续逻辑执行
+	}
 
-	// 关闭弹窗
-	closePopup();
+	try {
+		// 调用接单 API
+		const response = await acceptOrders(
+			parseInt(currentOrder.value.id), // 确保 orderId 是整数
+			parseInt(userStore.userInfo.studentId) // 确保 acceptorId 是整数
+		);
 
-	// 刷新订单列表
-	fetchOrders();
+		if (response.code === 0) {
+			// 接单成功逻辑
+			uni.showToast({
+				title: '接单成功',
+				icon: 'success',
+				duration: 1000
+			});
+
+			// 关闭弹窗
+			closePopup();
+
+			// 延迟 1 秒后刷新订单列表
+			setTimeout(() => {
+				fetchOrders();
+			}, 1000);
+		} else {
+			// 接单失败逻辑
+			uni.showModal({
+				title: '提示',
+				content: response.message || '接单失败，请重试',
+				showCancel: false,
+				confirmText: '确定'
+			});
+		}
+	} catch (error) {
+		console.error('接单失败:', error);
+		uni.showModal({
+			title: '提示',
+			content: '接单失败，请重试',
+			showCancel: false,
+			confirmText: '确定'
+		});
+	}
 };
 
 // 将方法传递给子组件

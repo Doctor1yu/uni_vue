@@ -39,22 +39,14 @@ export const register = (data) => {
 export const updateProfile = async (studentId, nickName, phoneNumber) => {
     return uni.request({
         url: `/apiUni/user/updateProfile?studentId=${studentId}&nickName=${nickName}&phoneNumber=${phoneNumber}`,
-        method: 'PUT'
+        method: 'put'
     });
 };
 
 // 更改用户密码接口
 export const changePassword = (studentId, oldPassword, newPassword, confirmPassword) => {
-    // 打印请求数据
-    console.log('请求数据:', {
-        studentId,
-        oldPassword,
-        newPassword,
-        confirmPassword
-    });
-
     return request({
         url: `/user/changePassword?studentId=${studentId}&oldPassword=${oldPassword}&newPassword=${newPassword}&confirmPassword=${confirmPassword}`,
-        method: 'PATCH'
+        method: 'patch'
     });
 };

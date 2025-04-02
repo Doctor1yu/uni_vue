@@ -12,13 +12,41 @@ const getStorageWithExpire = (key) => {
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    userInfo: null,
+    userInfo: {
+      id: null,
+      studentId: null,
+      password: null,
+      phoneNumber: null,
+      nickName: null,
+      avatarUrl: null,
+      role: null,
+      status: null,
+      applicationStatus: null,
+      createdAt: null,
+      updatedAt: null
+    },
     isLoggedIn: false
   }),
   
   actions: {
     setUserInfo(userInfo) {
-      this.userInfo = userInfo;
+      this.userInfo = {
+        id: userInfo.id,
+        studentId: userInfo.studentId,
+        password: userInfo.password,
+        phoneNumber: userInfo.phoneNumber,
+        nickName: userInfo.nickName,
+        avatarUrl: userInfo.avatarUrl,
+        role: userInfo.role,
+        status: userInfo.status,
+        applicationStatus: userInfo.applicationStatus || null,
+        createdAt: userInfo.createdAt,
+        updatedAt: userInfo.updatedAt
+      };
+    },
+    
+    setApplicationStatus(status) {
+      this.userInfo.applicationStatus = status;
     },
     
     setIsLoggedIn(status) {
@@ -26,7 +54,19 @@ export const useUserStore = defineStore('user', {
     },
     
     logout() {
-      this.userInfo = null;
+      this.userInfo = {
+        id: null,
+        studentId: null,
+        password: null,
+        phoneNumber: null,
+        nickName: null,
+        avatarUrl: null,
+        role: null,
+        status: null,
+        applicationStatus: null,
+        createdAt: null,
+        updatedAt: null
+      };
       this.isLoggedIn = false;
       uni.removeStorageSync('studentId');
       uni.removeStorageSync('userInfo');
@@ -46,6 +86,23 @@ export const useUserStore = defineStore('user', {
         // 如果数据已过期，清除存储并重置状态
         this.logout();
       }
+    },
+
+    // 清除用户信息
+    clearUserInfo() {
+      this.userInfo = {
+        id: null,
+        studentId: null,
+        password: null,
+        phoneNumber: null,
+        nickName: null,
+        avatarUrl: null,
+        role: null,
+        status: null,
+        applicationStatus: null,
+        createdAt: null,
+        updatedAt: null
+      };
     }
   }
 }); 

@@ -45,17 +45,10 @@
 			"style": {
 				"navigationBarTitleText": "注册"
 			}
-		},
-		{
-			"path": "pages/myZone_fun/rePwd/rePwd",
+		},{
+			"path": "pages/myZone_fun/submit/submit",
 			"style": {
-				"navigationBarTitleText": "修改密码"
-			}
-		},
-		{
-			"path": "pages/myZone_fun/editProfile/editProfile",
-			"style": {
-				"navigationBarTitleText": "编辑资料"
+				"navigationBarTitleText": "申请接单"
 			}
 		},
 		{
@@ -74,6 +67,18 @@
 			"path": "pages/myZone_fun/issueOther/issueOther",
 			"style": {
 				"navigationBarTitleText": "我的接单"
+			}
+		},
+		{
+			"path": "pages/myZone_fun/editProfile/editProfile",
+			"style": {
+				"navigationBarTitleText": "编辑资料"
+			}
+		},
+		{
+			"path": "pages/myZone_fun/rePwd/rePwd",
+			"style": {
+				"navigationBarTitleText": "修改密码"
 			}
 		}
 	],

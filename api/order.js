@@ -45,3 +45,11 @@ export const getOrdersByAcceptorIdAndStatus = (acceptorId, status) => {
 		method: 'get'
 	});
 };
+
+// 接单者接单
+export const acceptOrders = (orderId, acceptorId) => {
+	return request({
+		url: `/api/function/orders/accept?orderId=${orderId}&acceptorId=${acceptorId}`,
+		method: 'patch'
+	});
+};

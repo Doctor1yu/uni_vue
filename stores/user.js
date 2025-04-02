@@ -13,17 +13,8 @@ const getStorageWithExpire = (key) => {
 export const useUserStore = defineStore('user', {
   state: () => ({
     userInfo: {
-      id: null,
-      studentId: null,
-      password: null,
-      phoneNumber: null,
-      nickName: null,
-      avatarUrl: null,
-      role: null,
-      status: null,
-      applicationStatus: null,
-      createdAt: null,
-      updatedAt: null
+      applicationStatus: 2, // 默认状态为未申请
+      studentId: ''
     },
     isLoggedIn: false
   }),
@@ -39,14 +30,10 @@ export const useUserStore = defineStore('user', {
         avatarUrl: userInfo.avatarUrl,
         role: userInfo.role,
         status: userInfo.status,
-        applicationStatus: userInfo.applicationStatus || null,
+        applicationStatus: userInfo.applicationStatus || 2, // 默认状态为未申请
         createdAt: userInfo.createdAt,
         updatedAt: userInfo.updatedAt
       };
-    },
-    
-    setApplicationStatus(status) {
-      this.userInfo.applicationStatus = status;
     },
     
     setIsLoggedIn(status) {
@@ -54,19 +41,7 @@ export const useUserStore = defineStore('user', {
     },
     
     logout() {
-      this.userInfo = {
-        id: null,
-        studentId: null,
-        password: null,
-        phoneNumber: null,
-        nickName: null,
-        avatarUrl: null,
-        role: null,
-        status: null,
-        applicationStatus: null,
-        createdAt: null,
-        updatedAt: null
-      };
+      this.userInfo = null;
       this.isLoggedIn = false;
       uni.removeStorageSync('studentId');
       uni.removeStorageSync('userInfo');
@@ -90,19 +65,11 @@ export const useUserStore = defineStore('user', {
 
     // 清除用户信息
     clearUserInfo() {
-      this.userInfo = {
-        id: null,
-        studentId: null,
-        password: null,
-        phoneNumber: null,
-        nickName: null,
-        avatarUrl: null,
-        role: null,
-        status: null,
-        applicationStatus: null,
-        createdAt: null,
-        updatedAt: null
-      };
+      this.userInfo = null
+    },
+
+    setApplicationStatus(status) {
+      this.userInfo.applicationStatus = status;
     }
   }
 }); 

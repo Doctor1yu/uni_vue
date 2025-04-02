@@ -14,13 +14,13 @@
         </view>
         <view class="step">
           <text class="step-number">3</text>
-          <text class="step-text">审核通过</text>
+          <text class="step-text">审核结果</text>
         </view>
       </view>
     </view>
 
-    <!-- 提交 box -->
-    <view class="submit-box">
+    <!-- 根据 applicationStatus 显示不同内容 -->
+    <view v-if="userStore.userInfo.applicationStatus == 2" class="submit-box">
       <view class="submit-title">提交申请</view>
       <view class="form-item">
         <text class="label">学号</text>
@@ -30,22 +30,41 @@
         <text class="label">申请理由</text>
         <textarea class="textarea" placeholder="请输入申请理由（不少于10字）" v-model="form.reason" />
       </view>
+      <view class="submit-btn" @click="handleSubmit">提交申请</view>
     </view>
 
-    <!-- 提交按钮 -->
-    <view class="submit-btn" @click="handleSubmit">提交申请</view>
+    <view v-else-if="userStore.userInfo.applicationStatus == 1" class="status-box">
+      <view class="status-title">平台审核</view>
+      <view class="status-text">已提交申请，请耐心等待</view>
+    </view>
+
+    <view v-else-if="userStore.userInfo.applicationStatus == 3" class="status-box">
+      <view class="status-title">审核结果</view>
+      <view class="status-text">申请通过</view>
+    </view>
+
+    <view v-else-if="userStore.userInfo.applicationStatus == 4" class="status-box">
+      <view class="status-title">审核结果</view>
+      <view class="status-text">拒绝申请</view>
+      <view class="reject-reason">拒绝理由：{{ rejectReason }}</view>
+      <view class="reset-btn" @click="handleReset">重新申请</view>
+    </view>
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user'; // 导入用户 store
-import { submit } from '@/api/submit'; // 导入提交申请接口
+import { submit, resetStatus } from '@/api/submit'; // 导入提交申请和重置状态接口
 
 const userStore = useUserStore();
+const userInfo = computed(() => userStore.userInfo); // 获取用户信息
+const rejectReason = ref('您的申请不符合平台要求'); // 假设拒绝理由
+
+console.log('applicationStatus:', userInfo.value.applicationStatus);
 
 const form = ref({
-  studentId: userStore.userInfo.studentId || '', // 默认填充当前用户的学号
+  studentId: userInfo.value.studentId || '', // 默认填充当前用户的学号
   reason: '' // 申请理由
 });
 
@@ -86,6 +105,12 @@ const handleSubmit = async () => {
         icon: 'success'
       });
 
+      // 更新 applicationStatus 为已申请
+      userStore.userInfo.applicationStatus = 1;
+
+      // 调试：打印更新后的 applicationStatus
+      console.log('applicationStatus updated:', userStore.userInfo.applicationStatus);
+
       // 1秒后跳转到个人中心界面
       setTimeout(() => {
         uni.switchTab({
@@ -100,6 +125,31 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error('提交失败:', error);
+    uni.showToast({
+      title: '网络错误，请重试',
+      icon: 'none'
+    });
+  }
+};
+
+// 重置申请状态
+const handleReset = async () => {
+  try {
+    const response = await resetStatus(userStore.userInfo.studentId);
+    if (response.code === 0) {
+      userStore.userInfo.applicationStatus = 2; // 重置为未申请
+      uni.showToast({
+        title: '已重置申请状态',
+        icon: 'success'
+      });
+    } else {
+      uni.showToast({
+        title: response.data?.message || '重置状态失败',
+        icon: 'none'
+      });
+    }
+  } catch (error) {
+    console.error('重置状态失败:', error);
     uni.showToast({
       title: '网络错误，请重试',
       icon: 'none'
@@ -206,5 +256,42 @@ const handleSubmit = async () => {
   border-radius: 8rpx;
   font-size: 32rpx;
   margin-top: 40rpx;
+}
+
+/* 状态 box */
+.status-box {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.status-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.status-text {
+  font-size: 32rpx;
+  color: #666;
+}
+
+.reject-reason {
+  font-size: 28rpx;
+  color: #ff4d4f;
+  margin-top: 10rpx;
+}
+
+/* 重置按钮 */
+.reset-btn {
+  background-color: #ff4d4f;
+  color: #fff;
+  text-align: center;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  font-size: 32rpx;
+  margin-top: 20rpx;
 }
 </style>

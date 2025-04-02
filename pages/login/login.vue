@@ -20,7 +20,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { login} from '@/api/user';
+import { login } from '@/api/user';
 
 // 封装存储和读取带有过期时间的数据
 const setStorageWithExpire = (key, value, expire) => {
@@ -90,7 +90,6 @@ const handleLogin = async () => {
     }
     
     if (result.code === 0) {
-      // 直接使用 result.data 作为用户信息
       const userInfo = result.data || {
         studentId: form.value.studentId,
         nickName: `用户${form.value.studentId}`,
@@ -113,7 +112,7 @@ const handleLogin = async () => {
           password: form.value.password
         }, 3600);
       }
-      
+
       uni.showToast({
         title: '登录成功',
         icon: 'success'

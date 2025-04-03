@@ -20,7 +20,7 @@
     </view>
 
     <!-- 根据 applicationStatus 显示不同内容 -->
-    <view v-if="userStore.userInfo.applicationStatus == 2" class="submit-box">
+    <view v-if="applicationStatus == 2" class="submit-box">
       <view class="submit-title">提交申请</view>
       <view class="form-item">
         <text class="label">学号</text>
@@ -33,38 +33,62 @@
       <view class="submit-btn" @click="handleSubmit">提交申请</view>
     </view>
 
-    <view v-else-if="userStore.userInfo.applicationStatus == 1" class="status-box">
+    <view v-else-if="applicationStatus == 1" class="status-box">
       <view class="status-title">平台审核</view>
       <view class="status-text">已提交申请，请耐心等待</view>
     </view>
 
-    <view v-else-if="userStore.userInfo.applicationStatus == 3" class="status-box">
+    <view v-else-if="applicationStatus == 3" class="status-box">
       <view class="status-title">审核结果</view>
       <view class="status-text">申请通过</view>
+      <view class="reviewer">审核人：{{ reviewerName }}</view>
+      <view class="remark">通过理由：{{ remark }}</view>
     </view>
 
-    <view v-else-if="userStore.userInfo.applicationStatus == 4" class="status-box">
+    <view v-else-if="applicationStatus == 4" class="status-box">
       <view class="status-title">审核结果</view>
       <view class="status-text">拒绝申请</view>
-      <view class="reject-reason">拒绝理由：{{ rejectReason }}</view>
+      <view class="reviewer">审核人：{{ reviewerName }}</view>
+      <view class="remark">拒绝理由：{{ remark }}</view>
       <view class="reset-btn" @click="handleReset">重新申请</view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useUserStore } from '@/stores/user'; // 导入用户 store
-import { submit, resetStatus } from '@/api/submit'; // 导入提交申请和重置状态接口
+import { ref, onMounted } from 'vue';
+import { useUserStore } from '@/stores/user';
+import { submit, resetStatus, getApplication } from '@/api/submit';
 
 const userStore = useUserStore();
-const userInfo = computed(() => userStore.userInfo); // 获取用户信息
-const rejectReason = ref('您的申请不符合平台要求'); // 假设拒绝理由
+const applicationStatus = ref(2); // 默认状态为未申请
+const reviewerName = ref('admin');
+const remark = ref('无理由');
 
 const form = ref({
-  studentId: userInfo.value.studentId || '', // 默认填充当前用户的学号
-  reason: '' // 申请理由
+  studentId: userStore.userInfo.studentId || '',
+  reason: ''
 });
+
+// 获取申请状态
+const fetchApplicationStatus = async () => {
+  try {
+    const response = await getApplication(userStore.userInfo.studentId);
+    if (response.code === 0) {
+      applicationStatus.value = response.data;
+    } else {
+      uni.showToast({
+        title: response.message || '获取申请状态失败',
+        icon: 'none'
+      });
+    }
+  } catch (error) {
+    uni.showToast({
+      title: '网络错误，请重试',
+      icon: 'none'
+    });
+  }
+};
 
 // 提交申请
 const handleSubmit = async () => {
@@ -84,7 +108,7 @@ const handleSubmit = async () => {
   }
   if (form.value.reason.length < 10) {
     uni.showToast({
-      title: '申请理由不得少于20字',
+      title: '申请理由不得少于10字',
       icon: 'none'
     });
     return;
@@ -103,10 +127,7 @@ const handleSubmit = async () => {
         icon: 'success'
       });
 
-      // 更新 applicationStatus 为已申请
-      userStore.userInfo.applicationStatus = 1;
-
-      // 1秒后跳转到个人中心界面
+      applicationStatus.value = 1; // 更新状态为已申请
       setTimeout(() => {
         uni.switchTab({
           url: '/pages/myZone/myZone'
@@ -131,7 +152,7 @@ const handleReset = async () => {
   try {
     const response = await resetStatus(userStore.userInfo.studentId);
     if (response.code === 0) {
-      userStore.userInfo.applicationStatus = 2; // 重置为未申请
+      applicationStatus.value = 2; // 重置为未申请
       uni.showToast({
         title: '已重置申请状态',
         icon: 'success'
@@ -149,6 +170,11 @@ const handleReset = async () => {
     });
   }
 };
+
+// 页面加载时获取申请状态
+onMounted(() => {
+  fetchApplicationStatus();
+});
 </script>
 
 <style scoped>
@@ -271,9 +297,9 @@ const handleReset = async () => {
   color: #666;
 }
 
-.reject-reason {
+.reviewer, .remark {
   font-size: 28rpx;
-  color: #ff4d4f;
+  color: #666;
   margin-top: 10rpx;
 }
 

@@ -24,3 +24,12 @@ export const resetStatus = (studentId) => {
 		method: 'patch'
 	});
 };
+
+// 获取申请信息
+// @RequestParam
+export const getApplication = (studentId) => {
+	return request({
+		url: `/user/application-status?studentId=${studentId}`,
+		method: 'get',
+	});
+};

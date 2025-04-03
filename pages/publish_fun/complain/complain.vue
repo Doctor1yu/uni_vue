@@ -34,7 +34,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user'; // 导入用户 store
-import { issueFeedback } from '@/api/feeedback'; // 新增导入
+import { issueFeedback } from '@/api/feedback'; // 新增导入
 
 const userStore = useUserStore();
 

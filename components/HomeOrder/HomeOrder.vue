@@ -72,11 +72,6 @@
     flex: 1;
   }
   
-  .status {
-    font-size: 28rpx;
-    color: #007AFF;
-  }
-  
   .order-info {
     display: flex;
     align-items: center;

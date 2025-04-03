@@ -1,7 +1,8 @@
 // 引入 request 文件
-import request from '../utils/request.js'
+import request from '@/utils/request.js'
 
 // 提交申请
+// @RequestParam
 export const submit = (data) => {
 	const params = {
 		studentId: data.studentId,
@@ -16,6 +17,7 @@ export const submit = (data) => {
 }
 
 // 重置状态
+// @RequestParam
 export const resetStatus = (studentId) => {
 	return request({
 		url: `/applications/reset-status?studentId=${studentId}`,

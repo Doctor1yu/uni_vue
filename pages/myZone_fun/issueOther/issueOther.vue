@@ -64,10 +64,12 @@ const fetchOrders = async () => {
     const acceptorId = userStore.userInfo.studentId;
 
     const res = await getOrdersByAcceptorIdAndStatus(acceptorId, status);
-    console.log('接口返回数据:', res.data); // 打印返回数据
     myOrders.value = res.data;
   } catch (error) {
-    console.error('获取订单失败:', error.response ? error.response.data : error.message);
+    uni.showToast({
+      title: '获取订单失败，请稍后重试',
+      icon: 'none'
+    });
   }
 };
 

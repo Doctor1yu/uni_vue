@@ -109,15 +109,12 @@ const handleSubmit = async () => {
                 });
             }, 1000);
         } else {
-            // 打印失败时的响应数据
-            console.log('失败响应数据:', response);
             uni.showToast({
                 title: response.data?.message || '密码修改失败',
                 icon: 'none'
             });
         }
     } catch (error) {
-        console.error('保存失败:', error);
         uni.showToast({
             title: '网络错误，请重试',
             icon: 'none'

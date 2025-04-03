@@ -235,12 +235,6 @@ const handleSubmit = async () => {
   }
 
   try {
-    // 打印提交的数据
-    console.log('提交的订单数据:', {
-      ...formData.value,
-      publisherId: userStore.userInfo.studentId
-    });
-
     const response = await publishOrder({
       ...formData.value,
       publisherId: userStore.userInfo.studentId

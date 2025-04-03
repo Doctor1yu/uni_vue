@@ -47,7 +47,6 @@ const form = ref({
   password: ''
 });
 const rememberMe = ref(false);
-const loading = ref(false);
 const showPassword = ref(false);
 
 const eye_show = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_show.png")
@@ -55,7 +54,6 @@ const eye_hide = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_hide.png"
 
 
 const handleLogin = async () => {
-  console.log('点击登录按钮');
   if (!form.value.studentId) {
     uni.showToast({
       title: '请输入学号',
@@ -71,7 +69,6 @@ const handleLogin = async () => {
     return;
   }
   
-  loading.value = true;
   try {
     const params = {
       studentId: form.value.studentId,
@@ -137,8 +134,6 @@ const handleLogin = async () => {
         title: error.response?.data?.message || '登陆失败，请检查账号和密码',
         icon: 'none'
     });
-  } finally {
-    loading.value = false;
   }
 };
 

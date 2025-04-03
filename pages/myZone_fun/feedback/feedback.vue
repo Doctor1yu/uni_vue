@@ -70,7 +70,6 @@ const feedbacks = ref([]);
 const fetchFeedbacks = async () => {
   try {
     const response = await getFeedbacks(userStore.userInfo.studentId);
-    console.log('接口返回数据:', response);
     if (response && response.code === 0 && Array.isArray(response.data)) {
       feedbacks.value = response.data.map(item => ({
         ...item,
@@ -85,14 +84,12 @@ const fetchFeedbacks = async () => {
         });
       }
     } else {
-      console.error('接口返回数据异常:', response);
       uni.showToast({
         title: '获取反馈失败，数据异常',
         icon: 'none'
       });
     }
   } catch (error) {
-    console.error('获取反馈数据失败:', error);
     uni.showToast({
       title: '获取反馈失败，请稍后重试',
       icon: 'none'

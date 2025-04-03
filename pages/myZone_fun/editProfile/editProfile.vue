@@ -85,13 +85,11 @@ const handleSubmit = async () => {
             }, 1000);
         } else {
             uni.showToast({
-                // title: response.data.message || '保存失败',
-                title:  '保存失败',
+                title: '保存失败',
                 icon: 'none'
             });
         }
     } catch (error) {
-        console.error('保存失败:', error);
         uni.showToast({
             title: '网络错误，请重试',
             icon: 'none'

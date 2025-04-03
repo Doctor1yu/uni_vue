@@ -1,7 +1,8 @@
 // 引入 request 文件
-import request from '../utils/request.js'
+import request from '@/utils/request.js'
 
 // 获取反馈接口
+// @RequestParam
 export const getFeedbacks = (studentId) => {
 	return request({
 		url: `/api/feedbacks?studentId=${studentId}`,

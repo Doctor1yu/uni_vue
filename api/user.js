@@ -1,7 +1,8 @@
 // 引入 request 文件
-import request from '../utils/request.js'
+import request from '@/utils/request.js'
 
 // 用户登录接口
+// @RequestParam
 export const login = (data) => {
 	// 确保参数名称为studentId和password
 	const params = {
@@ -36,6 +37,7 @@ export const register = (data) => {
 }
 
 // 更新用户信息接口
+// @RequestParam
 export const updateProfile = async (studentId, nickName, phoneNumber) => {
     return uni.request({
         url: `/apiUni/user/updateProfile?studentId=${studentId}&nickName=${nickName}&phoneNumber=${phoneNumber}`,
@@ -44,6 +46,7 @@ export const updateProfile = async (studentId, nickName, phoneNumber) => {
 };
 
 // 更改用户密码接口
+// @RequestParam
 export const changePassword = (studentId, oldPassword, newPassword, confirmPassword) => {
     return request({
         url: `/user/changePassword?studentId=${studentId}&oldPassword=${oldPassword}&newPassword=${newPassword}&confirmPassword=${confirmPassword}`,

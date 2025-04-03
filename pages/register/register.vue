@@ -48,7 +48,6 @@ const form = ref({
   password: '',
   confirmPassword: ''
 });
-const loading = ref(false);
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
@@ -135,7 +134,6 @@ const handleRegister = async () => {
     return;
   }
 
-  loading.value = true;
   try {
     const params = {
       studentId: form.value.studentId,
@@ -145,8 +143,6 @@ const handleRegister = async () => {
       confirmPassword: form.value.confirmPassword,
       avatarUrl: form.value.avatarUrl || ''
     };
-    
-    console.log('注册请求参数:', params);
     
     const result = await register(params);
     
@@ -174,8 +170,6 @@ const handleRegister = async () => {
       title: '网络异常，请稍后再试',
       icon: 'none'
     });
-  } finally {
-    loading.value = false;
   }
 };
 </script>

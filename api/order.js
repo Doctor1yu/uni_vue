@@ -1,5 +1,5 @@
 // 引入 request 文件
-import request from '../utils/request.js'
+import request from '@/utils/request.js'
 
 // 获取订单列表接口
 export const getOrders = () => {
@@ -31,6 +31,7 @@ export const publishOrder = (data) => {
 };
 
 // 根据学号和状态获取订单列表
+// @RequestParam
 export const getOrdersByStatus = (publisherId, status) => {
 	return request({
 		url: `/api/function/orders/by-status?publisherId=${publisherId}&status=${status}`,
@@ -39,6 +40,7 @@ export const getOrdersByStatus = (publisherId, status) => {
 };
 
 // 根据接单者学号和状态获取订单列表
+// @RequestParam
 export const getOrdersByAcceptorIdAndStatus = (acceptorId, status) => {
 	return request({
 		url: `/api/function/orders/received?acceptorId=${acceptorId}&status=${status}`,
@@ -47,6 +49,7 @@ export const getOrdersByAcceptorIdAndStatus = (acceptorId, status) => {
 };
 
 // 接单者接单
+// @RequestParam
 export const acceptOrders = (orderId, acceptorId) => {
 	return request({
 		url: `/api/function/orders/accept?orderId=${orderId}&acceptorId=${acceptorId}`,

@@ -132,9 +132,6 @@ const fetchOrders = async () => {
 				remark: order.remark,
 				publishTime: formatDateTime(order.createdAt)
 			}));
-
-			// 打印格式化后的订单数据
-			console.log('格式化后的订单数据:', orders.value);
 		}
 	} catch (error) {
 		console.error('获取订单失败:', error);
@@ -303,22 +300,6 @@ const handleAcceptConfirm = async () => {
 // 将方法传递给子组件
 const orderProps = {
 	onAccept: handleAccept
-};
-
-const handleBack = () => {
-	// 显示加载动画
-	uni.showLoading({
-		title: '加载中...', // 确保 title 是字符串
-		mask: true // 可选
-	});
-
-	// 0.1秒后跳转到首页
-	setTimeout(() => {
-		uni.hideLoading(); // 隐藏加载动画
-		uni.reLaunch({
-			url: '/pages/home/home'
-		});
-	}, 100);
 };
 
 // 添加懒加载指令

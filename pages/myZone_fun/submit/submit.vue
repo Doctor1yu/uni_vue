@@ -61,8 +61,6 @@ const userStore = useUserStore();
 const userInfo = computed(() => userStore.userInfo); // 获取用户信息
 const rejectReason = ref('您的申请不符合平台要求'); // 假设拒绝理由
 
-console.log('applicationStatus:', userInfo.value.applicationStatus);
-
 const form = ref({
   studentId: userInfo.value.studentId || '', // 默认填充当前用户的学号
   reason: '' // 申请理由
@@ -108,9 +106,6 @@ const handleSubmit = async () => {
       // 更新 applicationStatus 为已申请
       userStore.userInfo.applicationStatus = 1;
 
-      // 调试：打印更新后的 applicationStatus
-      console.log('applicationStatus updated:', userStore.userInfo.applicationStatus);
-
       // 1秒后跳转到个人中心界面
       setTimeout(() => {
         uni.switchTab({
@@ -124,7 +119,6 @@ const handleSubmit = async () => {
       });
     }
   } catch (error) {
-    console.error('提交失败:', error);
     uni.showToast({
       title: '网络错误，请重试',
       icon: 'none'
@@ -149,7 +143,6 @@ const handleReset = async () => {
       });
     }
   } catch (error) {
-    console.error('重置状态失败:', error);
     uni.showToast({
       title: '网络错误，请重试',
       icon: 'none'

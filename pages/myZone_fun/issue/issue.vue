@@ -85,18 +85,13 @@ const fetchOrders = async () => {
                    activeTab.value === 'inProgress' ? '2' : '3';
     const publisherId = userStore.userInfo.studentId;
 
-    // 打印上传的数据
-    console.log('上传的数据:', {
-      publisherId,
-      status
-    });
-
-
     const res = await getOrdersByStatus(publisherId, status);
-    console.log('接口返回数据:', res.data); // 打印返回数据
     myOrders.value = res.data;
   } catch (error) {
-    console.error('获取订单失败:', error.response ? error.response.data : error.message);
+    uni.showToast({
+      title: '获取订单失败，请稍后重试',
+      icon: 'none'
+    });
   }
 };
 

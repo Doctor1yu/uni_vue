@@ -25,11 +25,20 @@ export const resetStatus = (studentId) => {
 	});
 };
 
-// 获取申请信息
+// 获取申请信息的状态
 // @RequestParam
-export const getApplication = (studentId) => {
+export const getApplicationStatus = (studentId) => {
 	return request({
 		url: `/user/application-status?studentId=${studentId}`,
+		method: 'get',
+	});
+};
+
+// 获取最新的申请信息
+// @RequestParam
+export const getLatestApplication = (studentId) => {
+	return request({
+		url: `/applications/latest?studentId=${studentId}`,
 		method: 'get',
 	});
 };

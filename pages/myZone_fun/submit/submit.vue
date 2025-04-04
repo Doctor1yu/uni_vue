@@ -5,15 +5,15 @@
       <view class="process-title">加入流程</view>
       <view class="process-steps">
         <view class="step">
-          <text class="step-number">1</text>
+          <text :class="['step-number', { 'step-number-active': applicationStatus == 2 }]">1</text>
           <text class="step-text">提交资料</text>
         </view>
         <view class="step">
-          <text class="step-number">2</text>
+          <text :class="['step-number', { 'step-number-active': applicationStatus == 1 }]">2</text>
           <text class="step-text">平台审核</text>
         </view>
         <view class="step">
-          <text class="step-number">3</text>
+          <text :class="['step-number', { 'step-number-active': applicationStatus == 3 || applicationStatus == 4 }]">3</text>
           <text class="step-text">审核结果</text>
         </view>
       </view>
@@ -24,7 +24,7 @@
       <view class="submit-title">提交申请</view>
       <view class="form-item">
         <text class="label">学号</text>
-        <input class="input" placeholder="请输入学号" v-model="form.studentId" />
+        <view class="input">{{ form.studentId }}</view>
       </view>
       <view class="form-item">
         <text class="label">申请理由</text>
@@ -43,6 +43,7 @@
       <view class="status-text">申请通过</view>
       <view class="reviewer">审核人：{{ reviewerName }}</view>
       <view class="remark">通过理由：{{ remark }}</view>
+      <view class="reviewed-at">审核时间：{{ reviewedAt }}</view>
     </view>
 
     <view v-else-if="applicationStatus == 4" class="status-box">
@@ -50,6 +51,7 @@
       <view class="status-text">拒绝申请</view>
       <view class="reviewer">审核人：{{ reviewerName }}</view>
       <view class="remark">拒绝理由：{{ remark }}</view>
+      <view class="reviewed-at">审核时间：{{ reviewedAt }}</view>
       <view class="reset-btn" @click="handleReset">重新申请</view>
     </view>
   </view>
@@ -58,12 +60,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { submit, resetStatus, getApplication } from '@/api/submit';
+import { submit, resetStatus, getApplicationStatus, getLatestApplication } from '@/api/submit';
 
 const userStore = useUserStore();
 const applicationStatus = ref(2); // 默认状态为未申请
-const reviewerName = ref('admin');
-const remark = ref('无理由');
+const reviewerName = ref('');
+const remark = ref('');
+const reviewedAt = ref('');
 
 const form = ref({
   studentId: userStore.userInfo.studentId || '',
@@ -73,9 +76,12 @@ const form = ref({
 // 获取申请状态
 const fetchApplicationStatus = async () => {
   try {
-    const response = await getApplication(userStore.userInfo.studentId);
+    const response = await getApplicationStatus(userStore.userInfo.studentId);
     if (response.code === 0) {
       applicationStatus.value = response.data;
+      if (response.data == 3 || response.data == 4) {
+        fetchLatestApplication();
+      }
     } else {
       uni.showToast({
         title: response.message || '获取申请状态失败',
@@ -88,6 +94,39 @@ const fetchApplicationStatus = async () => {
       icon: 'none'
     });
   }
+};
+
+// 获取最新的申请信息
+const fetchLatestApplication = async () => {
+  try {
+    const response = await getLatestApplication(userStore.userInfo.studentId);
+    if (response.code === 0) {
+      reviewerName.value = response.data.reviewerName;
+      remark.value = response.data.remark;
+      reviewedAt.value = formatDate(response.data.reviewedAt);
+    } else {
+      uni.showToast({
+        title: response.message || '获取申请信息失败',
+        icon: 'none'
+      });
+    }
+  } catch (error) {
+    uni.showToast({
+      title: '网络错误，请重试',
+      icon: 'none'
+    });
+  }
+};
+
+// 格式化时间函数
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
 // 提交申请
@@ -213,11 +252,15 @@ onMounted(() => {
   height: 50rpx;
   line-height: 50rpx;
   text-align: center;
-  background: #007AFF;
+  background: #007AFF; /* 默认蓝色 */
   color: #fff;
   border-radius: 50%;
   font-size: 28rpx;
   margin-bottom: 10rpx;
+}
+
+.step-number-active {
+  background: #ff4d4f; /* 激活步骤的红色 */
 }
 
 .step-text {
@@ -249,7 +292,8 @@ onMounted(() => {
   margin-bottom: 10rpx;
 }
 
-.input {
+.input, .textarea {
+  width: 92%; /* 设置相同的宽度 */
   background: #f5f5f5;
   border: 1rpx solid #ddd;
   border-radius: 8rpx;
@@ -258,12 +302,7 @@ onMounted(() => {
 }
 
 .textarea {
-  background: #f5f5f5;
-  border: 1rpx solid #ddd;
-  border-radius: 8rpx;
-  padding: 20rpx;
-  font-size: 28rpx;
-  height: 200rpx;
+  height: 200rpx; /* 保持 textarea 的高度 */
 }
 
 /* 提交按钮 */
@@ -297,8 +336,8 @@ onMounted(() => {
   color: #666;
 }
 
-.reviewer, .remark {
-  font-size: 28rpx;
+.reviewer, .remark, .reviewed-at {
+  font-size: 32rpx;
   color: #666;
   margin-top: 10rpx;
 }

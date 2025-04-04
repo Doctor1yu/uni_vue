@@ -30,9 +30,7 @@ export const useUserStore = defineStore('user', {
         avatarUrl: userInfo.avatarUrl,
         role: userInfo.role,
         status: userInfo.status,
-        applicationStatus: userInfo.applicationStatus || 2, // 默认状态为未申请
-        createdAt: userInfo.createdAt,
-        updatedAt: userInfo.updatedAt
+        applicationStatus: userInfo.applicationStatus || 2 // 默认状态为未申请
       };
     },
     

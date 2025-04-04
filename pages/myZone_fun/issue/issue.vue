@@ -135,6 +135,7 @@ import { ref, computed, onMounted } from 'vue';
 import { getOrdersByStatus } from '@/api/order';
 import { useUserStore } from '@/stores/user';
 import { getUserInfo } from '@/api/user';
+import { formatDateTime } from '@/utils/format'; // 导入公共的时间格式化函数
 import OrderCard from '@/components/OrderCard/OrderCard.vue';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 
@@ -142,18 +143,6 @@ const userStore = useUserStore();
 const activeTab = ref('myPosts');
 const popup = ref(null);
 const currentOrder = ref({});
-
-// 格式化时间
-const formatDateTime = (dateTime) => {
-  if (!dateTime) return '';
-  const date = new Date(dateTime);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-};
 
 // 切换选项卡
 const switchTab = async (tab) => {

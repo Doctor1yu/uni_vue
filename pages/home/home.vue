@@ -76,6 +76,7 @@ import { getRotations } from '@/api/rotation.js';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 import { useUserStore } from '@/stores/user';
 import { getUserInfo } from '@/api/user.js';
+import { formatDateTime } from '@/utils/format'; // 导入公共的时间格式化函数
 
 // 轮播图数据
 const swiperList = ref([]);
@@ -87,18 +88,6 @@ const orders = ref([]);
 
 const popup = ref(null);
 const currentOrder = ref({});
-
-// 格式化时间
-const formatDateTime = (dateTime) => {
-	if (!dateTime) return '';
-	const date = new Date(dateTime);
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, '0');
-	const day = String(date.getDate()).padStart(2, '0');
-	const hours = String(date.getHours()).padStart(2, '0');
-	const minutes = String(date.getMinutes()).padStart(2, '0');
-	return `${year}-${month}-${day} ${hours}:${minutes}`;
-};
 
 // 获取轮播图数据
 const fetchRotations = async () => {
@@ -119,19 +108,19 @@ const fetchOrders = async () => {
 
 		if (response.code === 0) {
 			orders.value = response.data.map(order => ({
-				id: order.id, // 确保获取订单 ID
+				id: order.id,
 				avatarUrl: order.publisherAvatarUrl,
 				nickname: order.publisherNickName,
 				publisherName: order.publisherName,
 				publisherId: order.publisherId,
 				pickupPoint: order.pickupPoint,
 				location: order.location,
-				sendAt: order.sendAt, // 配送时间
-				phoneNumber: order.phoneNumber, // 联系电话
-				description: order.description, // 取件码
+				sendAt: order.sendAt,
+				phoneNumber: order.phoneNumber,
+				description: order.description,
 				amount: order.amount,
 				remark: order.remark,
-				publishTime: formatDateTime(order.createdAt)
+				publishTime: formatDateTime(order.createdAt) // 使用导入的公共函数
 			}));
 		}
 	} catch (error) {

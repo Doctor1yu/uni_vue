@@ -53,3 +53,12 @@ export const changePassword = (studentId, oldPassword, newPassword, confirmPassw
         method: 'patch'
     });
 };
+
+// 获取用户信息接口
+// @RequestParam
+export const getUserInfo = (studentId) => {
+    return request({
+        url: `/user/find?studentId=${studentId}`,
+        method: 'get'
+    });
+};

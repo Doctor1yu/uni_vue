@@ -75,6 +75,7 @@ import { getOrders, acceptOrders } from '@/api/order.js';
 import { getRotations } from '@/api/rotation.js';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 import { useUserStore } from '@/stores/user';
+import { getUserInfo } from '@/api/user.js';
 
 // 轮播图数据
 const swiperList = ref([]);
@@ -233,11 +234,30 @@ const handleAcceptConfirm = async () => {
 		return; // 阻止后续逻辑执行
 	}
 
-	// 检查用户角色
-	if (userStore.userInfo.role == 1) {
+	// 从后端获取用户信息并检查角色
+	try {
+		const studentId = userStore.userInfo.studentId;
+		const response = await getUserInfo(studentId);
+
+		if (response.code === 0) {
+			const userRole = response.data.role;
+
+			// 检查用户角色，只有 role == 2 才能接单
+			if (userRole != 2) {
+				uni.showModal({
+					title: '提示',
+					content: '只有接单员才能接单',
+					showCancel: false,
+					confirmText: '确定'
+				});
+				return; // 阻止后续逻辑执行
+			}
+		}
+	} catch (error) {
+		console.error('获取用户信息失败:', error);
 		uni.showModal({
 			title: '提示',
-			content: '请先申请成为接单员',
+			content: '获取用户信息失败，请重试',
 			showCancel: false,
 			confirmText: '确定'
 		});

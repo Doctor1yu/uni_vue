@@ -60,7 +60,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { submit, resetStatus, getApplicationStatus, getLatestApplication } from '@/api/submit';
+import { submit, resetStatus, getLatestApplication } from '@/api/submit';
+import { getUserInfo } from '@/api/user';
 
 const userStore = useUserStore();
 const applicationStatus = ref(2); // 默认状态为未申请
@@ -76,10 +77,10 @@ const form = ref({
 // 获取申请状态
 const fetchApplicationStatus = async () => {
   try {
-    const response = await getApplicationStatus(userStore.userInfo.studentId);
+    const response = await getUserInfo(userStore.userInfo.studentId);
     if (response.code === 0) {
-      applicationStatus.value = response.data;
-      if (response.data == 3 || response.data == 4) {
+      applicationStatus.value = response.data.applicationStatus;
+      if (response.data.applicationStatus == 3 || response.data.applicationStatus == 4) {
         fetchLatestApplication();
       }
     } else {

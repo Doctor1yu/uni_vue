@@ -83,24 +83,16 @@
           <text class="value">{{ currentOrder.publishTime }}</text>
         </view>
         <view v-if="currentOrder.status === '2'" class="popup-item">
-          <text class="label">接单人：</text>
-          <text class="value">{{ currentOrder.acceptorId }}</text>
-        </view>
-        <view v-if="currentOrder.status === '2'" class="popup-item">
           <text class="label">接单时间：</text>
           <text class="value">{{ currentOrder.acceptTime }}</text>
-        </view>
-        <view v-if="currentOrder.status === '3'" class="popup-item">
-          <text class="label">接单人：</text>
-          <text class="value">{{ currentOrder.acceptorId }}</text>
         </view>
         <view v-if="currentOrder.status === '3'" class="popup-item">
           <text class="label">完成时间：</text>
           <text class="value">{{ currentOrder.completedTime }}</text>
         </view>
         <view class="button-group">
-          <button v-if="currentOrder.status === '2'" class="popup-button cancel-button" @click="closePopup">取消订单</button>
-          <button v-if="currentOrder.status === '2'" class="popup-button complete-button" @click="closePopup">已完成</button>
+          <button v-if="currentOrder.status === '2'" class="popup-button cancel-button" @click="handleCancelOrder">取消订单</button>
+          <button v-if="currentOrder.status === '2'" class="popup-button complete-button" @click="handleCompleteOrder">已完成</button>
           <button v-if="currentOrder.status === '3'" class="popup-button return-button" @click="closePopup">返回</button>
         </view>
       </view>
@@ -110,7 +102,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { getOrdersByAcceptorIdAndStatus } from '@/api/order';
+import { getOrdersByAcceptorIdAndStatus, updateOrderStatus, cancelOrder } from '@/api/order';
 import { useUserStore } from '@/stores/user';
 import OrderCard from '@/components/OrderCard/OrderCard.vue';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
@@ -147,6 +139,7 @@ const fetchOrders = async () => {
     const res = await getOrdersByAcceptorIdAndStatus(acceptorId, status);
     myOrders.value = res.data.map(order => ({
       ...order,
+      orderId: order.id,
       publishTime: formatDateTime(order.createdAt), // 格式化发布时间
       acceptTime: formatDateTime(order.acceptorAt), // 格式化接单时间
       completedTime: formatDateTime(order.acceptorAt), // 格式化完成时间
@@ -175,6 +168,42 @@ const completedOrders = computed(() => myOrders.value.filter(order => order.stat
 const handleOrderClick = (order) => {
   currentOrder.value = order;
   popup.value.open();
+};
+
+// 处理点击"已完成"按钮逻辑
+const handleCompleteOrder = async () => {
+  try {
+    await updateOrderStatus(currentOrder.value.orderId);
+    uni.showToast({
+      title: '订单已完成',
+      icon: 'success'
+    });
+    closePopup();
+    await fetchOrders(); // 重新获取订单数据
+  } catch (error) {
+    uni.showToast({
+      title: '操作失败，请稍后重试',
+      icon: 'none'
+    });
+  }
+};
+
+// 处理点击"取消订单"按钮逻辑
+const handleCancelOrder = async () => {
+  try {
+    await cancelOrder(currentOrder.value.orderId);
+    uni.showToast({
+      title: '订单已取消',
+      icon: 'success'
+    });
+    closePopup();
+    await fetchOrders(); // 重新获取订单数据
+  } catch (error) {
+    uni.showToast({
+      title: '操作失败，请稍后重试',
+      icon: 'none'
+    });
+  }
 };
 
 // 关闭弹窗

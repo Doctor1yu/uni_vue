@@ -56,3 +56,21 @@ export const acceptOrders = (orderId, acceptorId) => {
 		method: 'patch'
 	});
 };
+
+// 接单者更新订单状态
+// @RequestParam
+export const updateOrderStatus = (orderId) => {
+	return request({
+		url: `/api/function/orders/update-status?orderId=${orderId}`,
+		method: 'patch'
+	});
+};
+
+// 接单者取消订单
+// @RequestParam
+export const cancelOrder = (orderId) => {
+	return request({
+		url: `/api/function/orders/cancel?orderId=${orderId}`,
+		method: 'patch'
+	});
+};

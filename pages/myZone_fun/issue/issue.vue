@@ -103,7 +103,7 @@
         </view>
         <!-- 展示接单人信息 -->
         <view v-if="currentOrder.status === '2'" class="popup-item">
-          <text class="label">接单人：</text>
+          <text class="label">接单者：</text>
           <text class="value">{{ currentOrder.acceptorId }}</text>
         </view>
         <view v-if="currentOrder.status === '2'" class="popup-item">

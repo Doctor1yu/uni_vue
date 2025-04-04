@@ -20,9 +20,11 @@
       <text class="value">{{ order.location }}</text>
     </view>
 
-    <!-- 发布时间 -->
+    <!-- 发布时间或完成时间 -->
     <view class="order-footer">
-      <text class="publish-time">发布时间：{{ formatTime(order.createdAt) }}</text>
+      <text class="publish-time">
+        {{ order.status === '3' ? '完成时间：' + formatTime(order.completedTime) : '发布时间：' + formatTime(order.createdAt) }}
+      </text>
     </view>
   </view>
 </template>
@@ -51,6 +53,7 @@ const getStatusText = (status) => {
 
 // 新增时间格式化函数
 const formatTime = (time) => {
+  if (!time) return '';
   const date = new Date(time);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');

@@ -102,17 +102,21 @@
           <text class="value">{{ currentOrder.publishTime }}</text>
         </view>
         <!-- 展示接单人信息 -->
-        <view v-if="currentOrder.status === '2'" class="popup-item">
-          <text class="label">接单者：</text>
+        <view class="popup-item">
+          <text class="label">接单者昵称：</text>
+          <text class="value">{{ currentOrder.acceptorNickName }}</text>
+        </view>
+        <view class="popup-item">
+          <text class="label">接单者学号：</text>
           <text class="value">{{ currentOrder.acceptorId }}</text>
+        </view>
+        <view class="popup-item">
+          <text class="label">接单者电话：</text>
+          <text class="value">{{ currentOrder.acceptorPhoneNumber }}</text>
         </view>
         <view v-if="currentOrder.status === '2'" class="popup-item">
           <text class="label">接单时间：</text>
           <text class="value">{{ currentOrder.acceptTime }}</text>
-        </view>
-        <view v-if="currentOrder.status === '3'" class="popup-item">
-          <text class="label">接单人：</text>
-          <text class="value">{{ currentOrder.acceptorId }}</text>
         </view>
         <view v-if="currentOrder.status === '3'" class="popup-item">
           <text class="label">完成时间：</text>
@@ -130,6 +134,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { getOrdersByStatus } from '@/api/order';
 import { useUserStore } from '@/stores/user';
+import { getUserInfo } from '@/api/user';
 import OrderCard from '@/components/OrderCard/OrderCard.vue';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 
@@ -164,12 +169,24 @@ const fetchOrders = async () => {
     const publisherId = userStore.userInfo.studentId;
 
     const res = await getOrdersByStatus(publisherId, status);
-    myOrders.value = res.data.map(order => ({
-      ...order,
-      publishTime: formatDateTime(order.createdAt), // 格式化发布时间
-      acceptTime: formatDateTime(order.acceptorAt), // 格式化接单时间
-      completedTime: formatDateTime(order.acceptorAt), // 格式化完成时间（使用 acceptorAt 字段）
-      acceptorId: order.acceptorId // 接单人 studentId
+    myOrders.value = await Promise.all(res.data.map(async order => {
+      // 获取接单者的信息
+      let acceptorInfo = {};
+      if (order.acceptorId) {
+        const userRes = await getUserInfo(order.acceptorId);
+        acceptorInfo = {
+          acceptorNickName: userRes.data.nickName,
+          acceptorPhoneNumber: userRes.data.phoneNumber,
+        };
+      }
+
+      return {
+        ...order,
+        ...acceptorInfo, // 添加接单者的昵称和电话
+        publishTime: formatDateTime(order.createdAt), // 格式化发布时间
+        acceptTime: formatDateTime(order.acceptorAt), // 格式化接单时间
+        completedTime: formatDateTime(order.acceptorAt), // 格式化完成时间
+      };
     }));
   } catch (error) {
     uni.showToast({

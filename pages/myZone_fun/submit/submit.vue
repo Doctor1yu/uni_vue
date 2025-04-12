@@ -30,6 +30,13 @@
         <text class="label">申请理由</text>
         <textarea class="textarea" placeholder="请输入申请理由（不少于10字）" v-model="form.reason" />
       </view>
+      <view class="form-item">
+        <text class="label">收款码照片</text>
+        <button class="upload-button" @click="choosePaymentCode">选择照片</button>
+      </view>
+      <view v-if="paymentCodeImage" class="form-item">
+        <image :src="paymentCodeImage" class="uploaded-image" mode="aspectFit"></image>
+      </view>
       <view class="submit-btn" @click="handleSubmit">提交申请</view>
     </view>
 
@@ -62,12 +69,13 @@ import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { submit, resetStatus, getLatestApplication } from '@/api/submit';
 import { getUserInfo } from '@/api/user';
-
+import { formatDateTime } from '@/utils/format';
 const userStore = useUserStore();
 const applicationStatus = ref(2); // 默认状态为未申请
 const reviewerName = ref('');
 const remark = ref('');
 const reviewedAt = ref('');
+const paymentCodeImage = ref(null); // 存储收款码照片
 
 const form = ref({
   studentId: userStore.userInfo.studentId || '',
@@ -104,7 +112,7 @@ const fetchLatestApplication = async () => {
     if (response.code === 0) {
       reviewerName.value = response.data.reviewerName;
       remark.value = response.data.remark;
-      reviewedAt.value = formatDate(response.data.reviewedAt);
+      reviewedAt.value = formatDateTime(response.data.reviewedAt);
     } else {
       uni.showToast({
         title: response.message || '获取申请信息失败',
@@ -119,71 +127,75 @@ const fetchLatestApplication = async () => {
   }
 };
 
-// 格式化时间函数
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
+// 选择收款码照片
+const choosePaymentCode = () => {
+  uni.chooseImage({
+    count: 1,
+    sizeType: ['compressed'],
+    sourceType: ['album', 'camera'],
+    success: (res) => {
+      const tempFilePaths = res.tempFilePaths;
+      uni.uploadFile({
+        url: '/apiUni/api/collect/upload', // 上传收款码的接口
+        filePath: tempFilePaths[0],
+        name: 'file',
+        formData: {
+          studentId: form.value.studentId, // 传递学号
+        },
+        success: () => {
+          console.log('上传成功');
+          uni.showToast({ title: '上传成功', icon: 'success' });
+          paymentCodeImage.value = tempFilePaths[0]; // 更新显示的图片
+        },
+        fail: (error) => {
+          console.error('上传失败:', error);
+          uni.showToast({ title: '上传失败', icon: 'none' });
+        }
+      });
+    },
+    fail: (error) => {
+      console.error('选择照片失败:', error);
+      uni.showToast({ title: '选择照片失败', icon: 'none' });
+    }
+  });
 };
 
 // 提交申请
 const handleSubmit = async () => {
   if (!form.value.studentId) {
-    uni.showToast({
-      title: '请输入学号',
-      icon: 'none'
-    });
+    uni.showToast({ title: '请输入学号', icon: 'none' });
     return;
   }
   if (!form.value.reason) {
-    uni.showToast({
-      title: '请输入申请理由',
-      icon: 'none'
-    });
+    uni.showToast({ title: '请输入申请理由', icon: 'none' });
     return;
   }
   if (form.value.reason.length < 10) {
-    uni.showToast({
-      title: '申请理由不得少于10字',
-      icon: 'none'
-    });
+    uni.showToast({ title: '申请理由不得少于10字', icon: 'none' });
+    return;
+  }
+  if (!paymentCodeImage.value) {
+    uni.showToast({ title: '请上传收款码照片', icon: 'none' });
     return;
   }
 
   try {
-    // 调用提交申请接口
     const response = await submit({
       studentId: form.value.studentId,
-      applyReason: form.value.reason
+      applyReason: form.value.reason,
+      paymentCode: paymentCodeImage.value // 传递收款码照片路径
     });
-
     if (response.code === 0) {
-      uni.showToast({
-        title: '申请提交成功',
-        icon: 'success'
-      });
-
-      applicationStatus.value = 1; // 更新状态为已申请
+      uni.showToast({ title: '申请提交成功', icon: 'success' });
+      applicationStatus.value = 1;
       setTimeout(() => {
-        uni.switchTab({
-          url: '/pages/myZone/myZone'
-        });
+        uni.switchTab({ url: '/pages/myZone/myZone' });
       }, 1000);
     } else {
-      uni.showToast({
-        title: response.data?.message || '申请提交失败',
-        icon: 'none'
-      });
+      uni.showToast({ title: response.data?.message || '申请提交失败', icon: 'none' });
     }
   } catch (error) {
-    uni.showToast({
-      title: '网络错误，请重试',
-      icon: 'none'
-    });
+    uni.showToast({ title: '网络错误，请重试', icon: 'none' });
   }
 };
 
@@ -352,5 +364,25 @@ onMounted(() => {
   border-radius: 8rpx;
   font-size: 32rpx;
   margin-top: 20rpx;
+}
+
+/* 新增：上传收款码按钮 */
+.upload-button {
+  background-color: #007AFF;
+  color: #fff;
+  text-align: center;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  font-size: 32rpx;
+  margin-top: 20rpx;
+}
+
+/* 新增：上传收款码图片预览 */
+.uploaded-image {
+  width: 100%;
+  height: 200rpx;
+  object-fit: cover;
+  border-radius: 8rpx;
+  margin-top: 10rpx;
 }
 </style>

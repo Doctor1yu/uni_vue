@@ -179,7 +179,7 @@ const chooseImage = () => {
 
       // 上传文件
       uni.uploadFile({
-        url: '/apiUni/api/images/upload', // 后端接口地址
+        url: '/apiUni/api/send/upload', // 后端接口地址
         filePath: tempFilePaths[0], // 上传第一张照片
         name: 'file', // 后端接收文件的参数名
         formData: {

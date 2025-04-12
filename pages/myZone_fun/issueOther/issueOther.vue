@@ -90,6 +90,13 @@
           <text class="label">完成时间：</text>
           <text class="value">{{ currentOrder.completedTime }}</text>
         </view>
+        <view class="popup-item">
+          <text class="label">上传送达照片：</text>
+          <button class="upload-button" @click="chooseImage">选择照片</button>
+        </view>
+        <view v-if="sendImage" class="popup-item">
+          <image :src="sendImage" class="uploaded-image" mode="aspectFit"></image>
+        </view>
         <view class="button-group">
           <button v-if="currentOrder.status === '2'" class="popup-button cancel-button" @click="handleCancelOrder">取消订单</button>
           <button v-if="currentOrder.status === '2'" class="popup-button complete-button" @click="handleCompleteOrder">已完成</button>
@@ -112,6 +119,7 @@ const userStore = useUserStore();
 const activeTab = ref('inProgress');
 const popup = ref(null);
 const currentOrder = ref({});
+const sendImage = ref(null); // 存储上传的照片文件
 
 // 切换选项卡
 const switchTab = async (tab) => {
@@ -159,10 +167,56 @@ const handleOrderClick = (order) => {
   popup.value.open();
 };
 
+// 选择照片
+const chooseImage = () => {
+  uni.chooseImage({
+    count: 1, // 只允许选择一张照片
+    sizeType: ['compressed'], // 压缩图片
+    sourceType: ['album', 'camera'], // 从相册或相机选择
+    success: (res) => {
+      const tempFilePaths = res.tempFilePaths; // 获取临时文件路径
+      const orderId = currentOrder.value.orderId; // 动态获取 orderId
+
+      // 上传文件
+      uni.uploadFile({
+        url: '/apiUni/api/images/upload', // 后端接口地址
+        filePath: tempFilePaths[0], // 上传第一张照片
+        name: 'file', // 后端接收文件的参数名
+        formData: {
+          orderId: orderId, // 其他参数
+        },
+        success: (uploadRes) => {
+          console.log('上传成功:', uploadRes.data);
+          uni.showToast({ title: '上传成功', icon: 'success' });
+          sendImage.value = tempFilePaths[0]; // 更新显示的图片
+        },
+        fail: (error) => {
+          console.error('上传失败:', error);
+          uni.showToast({ title: '上传失败', icon: 'none' });
+        }
+      });
+    },
+    fail: (error) => {
+      console.error('选择照片失败:', error);
+      uni.showToast({ title: '选择照片失败', icon: 'none' });
+    }
+  });
+};
+
 // 处理点击"已完成"按钮逻辑
 const handleCompleteOrder = async () => {
+  if (!sendImage.value) {
+    uni.showToast({
+      title: '请上传照片',
+      icon: 'none'
+    });
+    return;
+  }
+
   try {
+    // 调用 API 更新订单状态
     await updateOrderStatus(currentOrder.value.orderId);
+    
     uni.showToast({
       title: '订单已完成',
       icon: 'success'
@@ -295,5 +349,24 @@ const closePopup = () => {
 .return-button {
   background-color: #ccc;
   color: #333;
+}
+
+/* 上传按钮样式 */
+.upload-button {
+  background-color: #007AFF;
+  color: #fff;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0 20rpx;
+}
+
+/* 上传照片预览样式 */
+.uploaded-image {
+  width: 200rpx;
+  height: 200rpx;
+  margin-top: 20rpx;
+  border-radius: 10rpx;
 }
 </style>

@@ -68,9 +68,18 @@ export const updateOrderStatus = (orderId) => {
 
 // 接单者取消订单
 // @RequestParam
-export const cancelOrder = (orderId) => {
+export const acceptorCancelOrder = (orderId) => {
 	return request({
-		url: `/api/function/orders/cancel?orderId=${orderId}`,
+		url: `/api/function/orders/acceptor-cancel?orderId=${orderId}`,
 		method: 'patch'
+	});
+};
+
+// 发布者取消订单
+// @RequestParam
+export const publisherCancelOrder = (orderId) => {
+	return request({
+		url: `/api/function/orders/publisher-cancel?orderId=${orderId}`,
+		method: 'delete'
 	});
 };

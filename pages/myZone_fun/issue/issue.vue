@@ -102,15 +102,15 @@
           <text class="value">{{ currentOrder.publishTime }}</text>
         </view>
         <!-- 展示接单人信息 -->
-        <view class="popup-item">
+        <view v-if="currentOrder.status !== '1'" class="popup-item">
           <text class="label">接单者昵称：</text>
           <text class="value">{{ currentOrder.acceptorNickName }}</text>
         </view>
-        <view class="popup-item">
+        <view v-if="currentOrder.status !== '1'" class="popup-item">
           <text class="label">接单者学号：</text>
           <text class="value">{{ currentOrder.acceptorId }}</text>
         </view>
-        <view class="popup-item">
+        <view v-if="currentOrder.status !== '1'" class="popup-item">
           <text class="label">接单者电话：</text>
           <text class="value">{{ currentOrder.acceptorPhoneNumber }}</text>
         </view>
@@ -122,7 +122,21 @@
           <text class="label">完成时间：</text>
           <text class="value">{{ currentOrder.completedTime }}</text>
         </view>
+        <view v-if="currentOrder.status === '3'" class="popup-item">
+          <view class="collect-url">
+            <text class="label">送达照片：</text>
+            <image v-if="currentOrder.sendUrl" :src="currentOrder.sendUrl" class="uploaded-image" mode="aspectFit"></image>
+            <text v-else>没有上传的照片</text>
+          </view>
+        </view>
+        <view v-if="currentOrder.status === '3'" class="popup-item">
+          <view class="collect-url">
+            <text class="label">收款码：</text>
+            <image :src="currentOrder.collectUrl" class="uploaded-image" mode="aspectFit"></image>
+          </view>
+        </view>
         <view class="button-group">
+          <button v-if="currentOrder.status === '1'" class="popup-button cancel-button" @click="handleCancelOrder">取消订单</button>
           <button class="popup-button return-button" @click="closePopup">返回</button>
         </view>
       </view>
@@ -132,9 +146,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { getOrdersByStatus } from '@/api/order';
+import { getOrdersByStatus, publisherCancelOrder } from '@/api/order';
 import { useUserStore } from '@/stores/user';
-import { getUserInfo } from '@/api/user';
+import { getUserInfo, getUserCollect } from '@/api/user';
 import { formatDateTime } from '@/utils/format'; // 导入公共的时间格式化函数
 import OrderCard from '@/components/OrderCard/OrderCard.vue';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
@@ -171,6 +185,7 @@ const fetchOrders = async () => {
 
       return {
         ...order,
+        orderId: order.id, // 确保 orderId 被正确赋值
         ...acceptorInfo, // 添加接单者的昵称和电话
         publishTime: formatDateTime(order.createdAt), // 格式化发布时间
         acceptTime: formatDateTime(order.acceptorAt), // 格式化接单时间
@@ -199,9 +214,39 @@ const inProgressOrders = computed(() => myOrders.value.filter(order => order.sta
 const completedOrders = computed(() => myOrders.value.filter(order => order.status === '3'));
 
 // 处理点击订单卡片逻辑
-const handleOrderClick = (order) => {
-  currentOrder.value = order;
+const handleOrderClick = async (order) => {
+  currentOrder.value = {
+    ...order,
+    orderId: order.id, // 确保 orderId 被正确赋值
+  };
+  
+  // 如果订单状态为已完成，获取收款码
+  if (order.status === '3') {
+    const collectRes = await getUserCollect(userStore.userInfo.studentId);
+    if (collectRes.code === 0) {
+      currentOrder.value.collectUrl = collectRes.data;
+    }
+  }
+  
   popup.value.open();
+};
+
+// 处理点击"取消订单"按钮逻辑
+const handleCancelOrder = async () => {
+  try {
+    await publisherCancelOrder(currentOrder.value.orderId);
+    uni.showToast({
+      title: '订单已取消',
+      icon: 'success'
+    });
+    closePopup();
+    await fetchOrders(); // 重新获取订单数据
+  } catch (error) {
+    uni.showToast({
+      title: '操作失败，请稍后重试',
+      icon: 'none'
+    });
+  }
 };
 
 // 关闭弹窗
@@ -299,5 +344,16 @@ const closePopup = () => {
 .accept-button {
   background-color: #007AFF;
   color: #fff;
+}
+
+.collect-url {
+  display: flex;
+  align-items: center;
+}
+
+.uploaded-image {
+  width: 200rpx;
+  height: 200rpx;
+  margin-left: 10rpx;
 }
 </style>

@@ -116,7 +116,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { getOrdersByAcceptorIdAndStatus, updateOrderStatus, cancelOrder } from '@/api/order';
+import { getOrdersByAcceptorIdAndStatus, updateOrderStatus, acceptorCancelOrder } from '@/api/order';
 import { useUserStore } from '@/stores/user';
 import OrderCard from '@/components/OrderCard/OrderCard.vue';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
@@ -259,7 +259,7 @@ const handleCompleteOrder = async () => {
 // 处理点击"取消订单"按钮逻辑
 const handleCancelOrder = async () => {
   try {
-    await cancelOrder(currentOrder.value.orderId);
+    await acceptorCancelOrder(currentOrder.value.orderId);
     uni.showToast({
       title: '订单已取消',
       icon: 'success'

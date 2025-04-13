@@ -23,19 +23,17 @@
     <!-- 发布时间或完成时间 -->
     <view class="order-footer">
       <text class="publish-time">
-        {{ order.status === '3' ? '完成时间：' + formatTime(order.completedTime) : '发布时间：' + formatTime(order.createdAt) }}
+        {{ order.status === '3' ? '完成时间：' + formatOrderTime(order.completedTime) : '发布时间：' + formatOrderTime(order.createdAt) }}
       </text>
     </view>
   </view>
 </template>
 
 <script setup>
-defineProps({
-  order: {
-    type: Object,
-    required: true
-  }
-});
+import { defineProps } from 'vue';
+import { formatDateTime } from '@/utils/format';
+
+const props = defineProps(['order']);
 
 // 新增状态转换函数
 const getStatusText = (status) => {
@@ -51,16 +49,9 @@ const getStatusText = (status) => {
   }
 };
 
-// 新增时间格式化函数
-const formatTime = (time) => {
-  if (!time) return '';
-  const date = new Date(time);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
+// 使用 formatDateTime 函数格式化时间
+const formatOrderTime = (time) => {
+  return formatDateTime(time);
 };
 </script>
 

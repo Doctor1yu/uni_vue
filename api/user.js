@@ -62,3 +62,12 @@ export const getUserInfo = (studentId) => {
         method: 'get'
     });
 };
+
+// 获取接单者收款码接口
+// @RequestParam
+export const getUserCollect = (acceptorId) => {
+    return request({
+        url: `/api/function/orders/acceptor-collect-url?acceptorId=${acceptorId}`,
+        method: 'get'
+    });
+};

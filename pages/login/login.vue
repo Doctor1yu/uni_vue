@@ -8,44 +8,56 @@
           <image :src="showPassword ? eye_show : eye_hide" style="width: 60rpx; height: 60rpx;" />
         </view>
       </view>
-      <view class="forget-password" @click="showSimpleDialog">忘记密码</view>
+      <!-- 将记住密码和忘记密码放在同一行 -->
+      <view class="remember-row">
+        <checkbox v-model="rememberMe" style="margin-right: 10rpx;">记住密码</checkbox>
+        <view class="forget-password" @click="showSimpleDialog">忘记密码</view>
+      </view>
+      
       <view class="button-group">
         <view class="button login-btn" @click="handleLogin">登录</view>
         <view class="button register-btn" @click="navigateToRegister">注册</view>
       </view>
     </view>
-
-    <!-- 忘记密码弹窗（仅确认按钮） -->
-    <uni-popup ref="forgotPasswordDialog" type="dialog">
-      <uni-popup-dialog
-        mode="base"
-        title="忘记密码"
-        content="请联系管理员，管理员电话：13088889999"
-        :show-cancel="false"
-        confirmText="确定"
-        @confirm="closeForgotPasswordDialog"
-      ></uni-popup-dialog>
-    </uni-popup>
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { login } from '@/api/user';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 import uniPopupDialog from '@dcloudio/uni-ui/lib/uni-popup-dialog/uni-popup-dialog.vue';
 
+// 封装存储和读取带有过期时间的数据
+const setStorageWithExpire = (key, value, expire) => {
+  const data = {
+    value,
+    expire: Date.now() + expire * 1000 // 过期时间（毫秒）
+  };
+  uni.setStorageSync(key, data);
+};
+
+const getStorageWithExpire = (key) => {
+  const data = uni.getStorageSync(key);
+  if (!data || Date.now() > data.expire) {
+    uni.removeStorageSync(key); // 如果过期，清除数据
+    return null;
+  }
+  return data.value;
+};
+
 const userStore = useUserStore();
+
 const form = ref({
   studentId: '',
   password: ''
 });
+const rememberMe = ref(false);
 const showPassword = ref(false);
-const forgotPasswordDialog = ref(null);
 
-const eye_show = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_show.png");
-const eye_hide = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_hide.png");
+const eye_show = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_show.png")
+const eye_hide = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_hide.png")
 
 // 显示忘记密码弹窗
 const showSimpleDialog = () => {
@@ -61,6 +73,7 @@ const showSimpleDialog = () => {
 const closeForgotPasswordDialog = () => {
   forgotPasswordDialog.value.close();
 };
+
 
 const handleLogin = async () => {
   if (!form.value.studentId) {
@@ -92,7 +105,7 @@ const handleLogin = async () => {
         title: '您的账号已被限制登录，请联系管理员',
         icon: 'none'
       });
-      return;
+      return; // 直接返回，不执行后续操作
     }
     
     if (result.code === 0) {
@@ -106,30 +119,55 @@ const handleLogin = async () => {
       userStore.setUserInfo(userInfo);
       userStore.setIsLoggedIn(true);
       
+      // 更新本地存储，设置过期时间为 1 小时（3600 秒）
+      setStorageWithExpire('studentId', form.value.studentId, 3600);
+      setStorageWithExpire('isLoggedIn', true, 3600);
+      setStorageWithExpire('userInfo', userInfo, 3600);
+      
+      // 如果勾选"记住密码"，保存账号密码
+      if (rememberMe.value) {
+        setStorageWithExpire('savedCredentials', {
+          studentId: form.value.studentId,
+          password: form.value.password
+        }, 3600);
+      }
+
       uni.showToast({
         title: '登录成功',
         icon: 'success'
       });
 
-      // 跳转到首页
+      // 先刷新页面，再跳转到首页
       setTimeout(() => {
         uni.reLaunch({
           url: '/pages/home/home'
         });
       }, 1500);
     } else {
+      // 登录失败，显示错误信息
       uni.showToast({
         title: result.data.message || '登录失败，请检查账号和密码',
         icon: 'none'
       });
     }
   } catch (error) {
+    // 登录失败，显示错误信息
     uni.showToast({
-      title: error.response?.data?.message || '登录失败，请检查账号和密码',
-      icon: 'none'
+        title: error.response?.data?.message || '登陆失败，请检查账号和密码',
+        icon: 'none'
     });
   }
 };
+
+// 页面加载时检查是否有保存的登录信息
+onMounted(() => {
+  const savedCredentials = getStorageWithExpire('savedCredentials');
+  if (savedCredentials) {
+    form.value.studentId = savedCredentials.studentId;
+    form.value.password = savedCredentials.password;
+    rememberMe.value = true;
+  }
+});
 
 const navigateToRegister = () => {
   uni.navigateTo({
@@ -195,10 +233,17 @@ const navigateToRegister = () => {
   font-size: 40rpx;
 }
 
+/* 新增记住密码行样式 */
+.remember-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+/* 调整忘记密码样式 */
 .forget-password {
-  text-align: right;
   color: #007AFF;
   font-size: 28rpx;
-  margin-bottom: 20rpx;
 }
 </style>

@@ -90,12 +90,19 @@
           <text class="label">完成时间：</text>
           <text class="value">{{ currentOrder.completedTime }}</text>
         </view>
-        <view class="popup-item">
+        <view v-if="currentOrder.status === '2'" class="popup-item">
           <text class="label">上传送达照片：</text>
           <button class="upload-button" @click="chooseImage">选择照片</button>
         </view>
-        <view v-if="sendImage" class="popup-item">
-          <image :src="sendImage" class="uploaded-image" mode="aspectFit"></image>
+        <view v-if="currentOrder.status === '3'" class="popup-item">
+          <text class="label">送达照片：</text>
+          <image v-if="currentOrder.sendUrl" :src="currentOrder.sendUrl" class="uploaded-image" mode="aspectFit"></image>
+          <text v-else>没有上传的照片</text>
+          
+          <view class="collect-url">
+            <text class="label">收款码：</text>
+            <image :src="currentOrder.collectUrl" class="uploaded-image" mode="aspectFit"></image>
+          </view>
         </view>
         <view class="button-group">
           <button v-if="currentOrder.status === '2'" class="popup-button cancel-button" @click="handleCancelOrder">取消订单</button>
@@ -114,6 +121,7 @@ import { useUserStore } from '@/stores/user';
 import OrderCard from '@/components/OrderCard/OrderCard.vue';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 import { formatDateTime } from '@/utils/format'; // 导入公共的时间格式化函数
+import { getUserCollect } from '@/api/user'; // 导入获取收款码的函数
 
 const userStore = useUserStore();
 const activeTab = ref('inProgress');
@@ -137,10 +145,18 @@ const fetchOrders = async () => {
     myOrders.value = res.data.map(order => ({
       ...order,
       orderId: order.id,
-      publishTime: formatDateTime(order.createdAt), // 使用导入的公共函数
-      acceptTime: formatDateTime(order.acceptorAt), // 使用导入的公共函数
+      publishTime: formatDateTime(order.createdAt),
+      acceptTime: formatDateTime(order.acceptorAt),
       completedTime: formatDateTime(order.acceptorAt),
     }));
+
+    // 只有在已完成接单界面时才获取收款码
+    if (status === '3') {
+      const collectRes = await getUserCollect(acceptorId);
+      if (collectRes.code === 0) {
+        currentOrder.value.collectUrl = collectRes.data; // 确保使用 .value 赋值
+      }
+    }
   } catch (error) {
     uni.showToast({
       title: '获取订单失败，请稍后重试',
@@ -162,12 +178,21 @@ const inProgressOrders = computed(() => myOrders.value.filter(order => order.sta
 const completedOrders = computed(() => myOrders.value.filter(order => order.status === '3'));
 
 // 处理点击订单卡片逻辑
-const handleOrderClick = (order) => {
+const handleOrderClick = async (order) => {
   currentOrder.value = order;
+  
+  // 如果订单状态为已完成，获取收款码
+  if (order.status === '3') {
+    const collectRes = await getUserCollect(userStore.userInfo.studentId);
+    if (collectRes.code === 0) {
+      currentOrder.value.collectUrl = collectRes.data;
+    }
+  }
+  
   popup.value.open();
 };
 
-// 选择照片
+// 上传照片
 const chooseImage = () => {
   uni.chooseImage({
     count: 1, // 只允许选择一张照片
@@ -364,9 +389,13 @@ const closePopup = () => {
 
 /* 上传照片预览样式 */
 .uploaded-image {
-  width: 200rpx;
-  height: 200rpx;
-  margin-top: 20rpx;
+  width: 300rpx;
+  height: 300rpx;
   border-radius: 10rpx;
+}
+
+/* 收款码样式 */
+.collect-url {
+  margin-top: 20rpx; /* 调整与其他元素的间距 */
 }
 </style>

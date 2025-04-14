@@ -164,9 +164,10 @@ const formatPhone = (phone) => {
 	return phone ? phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '';
 };
 
-// 格式化描述
-const formatDescription = (desc) => {
-	return desc ? desc.replace(/(\d{2})-(\d{4})/, '**-****') : '';
+// 格式化取件码，将除"-"以外的所有字符替换为"*"
+const formatDescription = (description) => {
+	if (!description) return '';
+	return description.replace(/[^-]/g, '*');
 };
 
 // 处理接单逻辑

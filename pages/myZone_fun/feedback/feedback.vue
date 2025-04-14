@@ -42,12 +42,21 @@
             <text class="label">反馈时间：</text>
             <text class="value">{{ new Date(currentFeedback.createdAt).toLocaleString() }}</text>
           </view>
-          <view v-if="currentFeedback.status === 2" class="modal-item">
-            <text class="label">解决时间：</text>
+          <view v-if="currentFeedback.status !== 1" class="modal-item">
+            <text class="label">处理内容：</text>
+            <text class="value">{{ currentFeedback.answer }}</text>
+          </view>
+          <view v-if="currentFeedback.status !== 1" class="modal-item">
+            <text class="label">处理人：</text>
+            <text class="value">{{ currentFeedback.answerName }}</text>
+          </view>
+          <view v-if="currentFeedback.status !== 1" class="modal-item">
+            <text class="label">处理时间：</text>
             <text class="value">{{ new Date(currentFeedback.updatedAt).toLocaleString() }}</text>
           </view>
         </view>
         <view class="modal-footer">
+          <button v-if="currentFeedback.status === 2" class="complete-btn" @click="handleCompleteFeedback">已完成</button>
           <button class="close-btn" @click="popup.close()">关闭</button>
         </view>
       </view>
@@ -59,7 +68,7 @@
 import { ref, onMounted } from 'vue';
 import uniPopup from '@dcloudio/uni-ui/lib/uni-popup/uni-popup.vue';
 import { useUserStore } from '@/stores/user';
-import { getFeedbacks } from '@/api/feedback';
+import { getFeedbacks, updateFeedbackStatus } from '@/api/feedback';
 
 const userStore = useUserStore();
 const popup = ref(null);
@@ -101,6 +110,35 @@ const fetchFeedbacks = async () => {
 const handleFeedbackClick = (feedback) => {
   currentFeedback.value = feedback;
   popup.value.open();
+};
+
+// 处理点击"已完成"按钮逻辑
+const handleCompleteFeedback = async () => {
+  try {
+    const response = await updateFeedbackStatus(currentFeedback.value.id);
+    if (response && response.code === 0) {
+      // 更新反馈状态为已完成
+      currentFeedback.value.status = 3;
+      // 更新处理时间为当前时间
+      currentFeedback.value.updatedAt = new Date().toISOString();
+      uni.showToast({
+        title: '反馈状态已更新为已完成',
+        icon: 'success'
+      });
+      // 重新获取反馈数据
+      await fetchFeedbacks();
+    } else {
+      uni.showToast({
+        title: '更新反馈状态失败',
+        icon: 'none'
+      });
+    }
+  } catch (error) {
+    uni.showToast({
+      title: '更新反馈状态失败，请稍后重试',
+      icon: 'none'
+    });
+  }
 };
 
 onMounted(() => {

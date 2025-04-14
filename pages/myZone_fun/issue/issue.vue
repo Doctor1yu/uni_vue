@@ -299,6 +299,8 @@ const closePopup = () => {
   border-radius: 20rpx;
   padding: 40rpx;
   width: 600rpx;
+  max-height: 80vh; /* 设置最大高度为视口的80% */
+  overflow-y: auto; /* 启用垂直滚动 */
 }
 
 .popup-title {
@@ -309,7 +311,7 @@ const closePopup = () => {
 }
 
 .popup-item {
-  margin-bottom: 20rpx;
+  margin-bottom: 10rpx;
 }
 
 .label {
@@ -348,12 +350,13 @@ const closePopup = () => {
 
 .collect-url {
   display: flex;
-  align-items: center;
+  flex-direction: column; /* 使内容垂直排列 */
+  align-items: flex-start; /* 使内容靠左对齐 */
 }
 
 .uploaded-image {
-  width: 200rpx;
-  height: 200rpx;
+  width: 100%;
+  height: 300rpx;
   margin-left: 10rpx;
 }
 </style>

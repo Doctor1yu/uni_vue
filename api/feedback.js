@@ -25,3 +25,11 @@ export const issueFeedback = (data) => {
 		data: params
 	});
 };
+
+// 根据id修改反馈状态为已完成
+export const updateFeedbackStatus = (id) => {
+	return request({
+		url: `/api/update?id=${id}`,
+		method: 'patch'
+	});
+};

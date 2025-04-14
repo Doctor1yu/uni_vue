@@ -51,6 +51,12 @@
       <view class="reviewer">审核人：{{ reviewerName }}</view>
       <view class="remark">通过理由：{{ remark }}</view>
       <view class="reviewed-at">审核时间：{{ reviewedAt }}</view>
+      <view class="collect-url">
+        <text class="label">收款码：</text>
+        <image v-if="paymentCodeImage" :src="paymentCodeImage" class="uploaded-image" mode="aspectFit"></image>
+        <text v-else>没有上传的收款码</text>
+      </view>
+      <view class="reset-btn" @click="handleReset">重新提交申请</view>
     </view>
 
     <view v-else-if="applicationStatus == 4" class="status-box">
@@ -59,7 +65,7 @@
       <view class="reviewer">审核人：{{ reviewerName }}</view>
       <view class="remark">拒绝理由：{{ remark }}</view>
       <view class="reviewed-at">审核时间：{{ reviewedAt }}</view>
-      <view class="reset-btn" @click="handleReset">重新申请</view>
+      <view class="reset-btn" @click="handleReset">重新提交申请</view>
     </view>
   </view>
 </template>
@@ -68,7 +74,7 @@
 import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { submit, resetStatus, getLatestApplication } from '@/api/submit';
-import { getUserInfo } from '@/api/user';
+import { getUserInfo ,getUserCollect} from '@/api/user';
 import { formatDateTime } from '@/utils/format';
 const userStore = useUserStore();
 const applicationStatus = ref(2); // 默认状态为未申请
@@ -113,6 +119,14 @@ const fetchLatestApplication = async () => {
       reviewerName.value = response.data.reviewerName;
       remark.value = response.data.remark;
       reviewedAt.value = formatDateTime(response.data.reviewedAt);
+
+      // 如果审核通过，获取收款码
+      if (applicationStatus.value == 3) {
+        const collectRes = await getUserCollect(userStore.userInfo.studentId);
+        if (collectRes.code === 0) {
+          paymentCodeImage.value = collectRes.data; // 更新收款码照片
+        }
+      }
     } else {
       uni.showToast({
         title: response.message || '获取申请信息失败',
@@ -379,10 +393,17 @@ onMounted(() => {
 
 /* 新增：上传收款码图片预览 */
 .uploaded-image {
-  width: 100%;
-  height: 200rpx;
+  width: 400rpx; /* 增加宽度 */
+  height: 400rpx; /* 增加高度 */
   object-fit: cover;
   border-radius: 8rpx;
-  margin-top: 10rpx;
+  margin: auto; /* 确保图片居中显示 */
+}
+
+.collect-url {
+  display: flex;
+  flex-direction: column; /* 使内容垂直排列 */
+  align-items: flex-start; /* 使标签左对齐 */
+  margin-top: 20rpx; /* 调整与其他元素的间距 */
 }
 </style>

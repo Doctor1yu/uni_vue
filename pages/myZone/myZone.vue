@@ -87,23 +87,23 @@ onMounted(() => {
 // 图标路径
 const icons = {
   // 申请校区图标
-  campus: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/xiaoyuan.png',
+  campus: 'http://image.starhub666.cn/uni/icon/xiaoyuan.png',
   // 申请接单图标
-  applyOrder: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/jiedan.png',
+  applyOrder: 'http://image.starhub666.cn/uni/icon/jiedan.png',
   // 我的反馈图标
-  feedback: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/fankui.png',
+  feedback: 'http://image.starhub666.cn/uni/icon/fankui.png',
   // 我的订单图标
-  orders: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/dingdan.png',
+  orders: 'http://image.starhub666.cn/uni/icon/dingdan.png',
   // 我的接单图标
-  issueOther: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/daina.png',
+  issueOther: 'http://image.starhub666.cn/uni/icon/kuaidi.png',
   // 编辑资料图标
-  edit: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/bianji.png',
-  // 修改密码图标(有问题)
-  password: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/gaimi.png',
+  edit: 'http://image.starhub666.cn/uni/icon/bianji.png',
+  // 修改密码图标
+  password: 'http://image.starhub666.cn/uni/icon/yuechi.png',
   // 退出登录图标
-  logout: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/tuichu.png',
+  logout: 'http://image.starhub666.cn/uni/icon/tuichu.png',
   // 右侧箭头图标
-  arrow: 'http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/right.png'
+  arrow: 'http://image.starhub666.cn/uni/icon/right.png'
 };
 
 // 修改头像点击事件

@@ -93,6 +93,7 @@
         <view v-if="currentOrder.status === '2'" class="popup-item">
           <text class="label">上传送达照片：</text>
           <button class="upload-button" @click="chooseImage">选择照片</button>
+          <image v-if="sendImage" :src="sendImage" class="uploaded-image" mode="aspectFit"></image>
         </view>
         <view v-if="currentOrder.status === '3'" class="popup-item-image">
           <text class="label">送达照片：</text>
@@ -188,7 +189,6 @@ const chooseImage = () => {
           orderId: orderId, // 其他参数
         },
         success: (uploadRes) => {
-          console.log('上传成功:', uploadRes.data);
           uni.showToast({ title: '上传成功', icon: 'success' });
           sendImage.value = tempFilePaths[0]; // 更新显示的图片
         },

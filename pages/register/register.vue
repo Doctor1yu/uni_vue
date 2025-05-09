@@ -38,8 +38,9 @@ import { ref } from 'vue';
 import { register } from '@/api/user';
 
 // 默认头像URL
-const maleAvatar = ref('http://stm89m2wy.hd-bkt.clouddn.com/uni/avatarUrl/boy.jpg');
-const femaleAvatar = ref('http://stm89m2wy.hd-bkt.clouddn.com/uni/avatarUrl/girl.jpg');
+const maleAvatar = ref('http://image.starhub666.cn/uni/avatarUrl/boy.png');
+const femaleAvatar = ref('http://image.starhub666.cn/uni/avatarUrl/girl.png');
+
 const form = ref({
   avatarUrl: femaleAvatar.value,
   studentId: '',
@@ -51,8 +52,8 @@ const form = ref({
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
-const eye_show = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_show.png")
-const eye_hide = ref("http://stm89m2wy.hd-bkt.clouddn.com/uni/icon/eye_hide.png")
+const eye_show = ref("http://image.starhub666.cn/uni/icon/eye_show.png")
+const eye_hide = ref("http://image.starhub666.cn/uni/icon/eye_hide.png")
 
 // 选择头像
 const selectAvatar = (url) => {

@@ -23,7 +23,7 @@
         <!-- 反馈内容 -->
         <textarea class="textarea" placeholder="请输入反馈内容" v-model="form.content"></textarea>
         <!-- 联系方式 -->
-        <input class="input" placeholder="请输入联系方式" v-model="form.phoneNumber" />
+        <input class="input" placeholder="请输入联系方式（仅支持邮箱）" v-model="form.phoneNumber" />
         <!-- 提交按钮 -->
         <view class="submit-btn" @click="handleSubmit">提交</view>
       </view>
@@ -61,7 +61,7 @@ const handleSubjectChange = (e) => {
 const handleSubmit = async () => {
   if (!form.value.subject) {
     uni.showToast({
-      title: '请输入反馈主题',
+      title: '请选择反馈主题',
       icon: 'none'
     });
     return;
